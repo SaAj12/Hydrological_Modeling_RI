@@ -1,0 +1,14 @@
+# Data (large; use SWAT_DATA_DIR or deploy bundle separately)
+backend/data/domain_*/
+*.zip
+# Excel temp
+~$*.xlsx
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+venv/
+.env
+# IDE
+.idea/
+.vscode/
