@@ -12,7 +12,7 @@ DOCS = PROJECT_ROOT / "docs"
 
 def main():
     DOCS.mkdir(exist_ok=True)
-    for name in ["index.html", "css", "js", "data"]:
+    for name in ["index.html", "css", "js", "data", "vendor"]:
         src = FRONTEND / name
         dst = DOCS / name
         if src.is_file():
