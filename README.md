@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Hydrological Modeling — Discharge Data Viewer
 
 A web platform to view discharge values at monitoring stations. Anyone with the link can access the data, click on any station, and see the discharge time-series trend (1950–2025). Y-axis units: m³/s (cubic meters per second).
@@ -105,3 +106,31 @@ Your site will be at: **https://saaj12.github.io/Hydrological-Modeling/**
 ## License
 
 Use and adapt as needed. Data sources have their own terms.
+=======
+# Hydrological Modeling (viewer2)
+
+Discharge data viewer for GitHub deployment. Station names show as text with 8-digit IDs (e.g. **TAUNTON RIVER NEAR BRIDGEWATER, MA (01108000)**). Chart: cfs (cubic feet per second), thinner line. No DEM or Watershed layers.
+
+## Changes from viewer1
+
+- **Station IDs** displayed as 8-digit text (e.g. `01108000` not `1108000`)
+- **Chart title:** "Discharge (cfs, Cubic feet per second)"
+- **Chart:** Thinner line (`borderWidth: 1`)
+- **DEM and Watershed** removed from map and dataset
+
+## Quick start
+
+1. Copy `discharge.xlsx` into `D:\Brown\SWAT\viewer2` (same file as in viewer1).
+2. Export data: `python scripts/export_discharge_data.py`
+3. Double-click **RUN_FRONTEND.bat** and open **http://localhost:8080**
+
+Optional: run **RUN_BACKEND.bat** for API-served data; the app works fully from static JSON without the backend.
+
+## Deploy to GitHub Pages
+
+1. Run `python scripts/export_discharge_data.py` then `python scripts/prepare_gh_pages.py` (or double-click **BUILD.bat**).
+2. Push the repo including the `docs/` folder.
+3. In GitHub: **Settings** → **Pages** → Source: branch `main`, folder **/docs**.
+
+Site URL: **https://saaj12.github.io/YourRepoName/**
+>>>>>>> 3a2b943 (Initial commit of Hydrological Modeling project)

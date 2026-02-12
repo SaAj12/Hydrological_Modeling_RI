@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Data (large; use SWAT_DATA_DIR or deploy bundle separately)
 backend/data/domain_*/
 *.zip
@@ -12,3 +13,18 @@ venv/
 # IDE
 .idea/
 .vscode/
+=======
+# Data
+backend/data/domain_*/
+*.zip
+~$*.xlsx
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+venv/
+.env
+# IDE
+.idea/
+.vscode/
+>>>>>>> 3a2b943 (Initial commit of Hydrological Modeling project)

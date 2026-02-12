@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hydrological Modeling</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌊</text></svg>">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="api-error-banner" class="api-error-banner hidden" role="alert">
+    Loading discharge data. If the map is empty, ensure <code>data/discharge_data.json</code> exists (run <code>python scripts/export_discharge_data.py</code>).
+  </div>
+  <div class="app">
+    <header class="header">
+      <h1>Hydrological Modeling</h1>
+      <p class="subtitle">Discharge data at monitoring stations — click a station on the map or select from the list to view time series</p>
+      <div class="search-bar">
+        <label>Station:</label>
+        <select id="discharge-select">
+          <option value="">— select station —</option>
+        </select>
+      </div>
+    </header>
+
+    <main class="main">
+      <div id="map" class="map"></div>
+      <aside class="panel">
+        <div id="panel-placeholder" class="placeholder">
+          Click a station on the map or select from the dropdown to view discharge time series.
+        </div>
+        <div id="panel-content" class="content hidden">
+          <h2 id="point-title">Station</h2>
+          <p id="point-meta" class="meta"></p>
+          <div class="charts">
+            <div id="discharge-chart-wrap" class="chart-wrap">
+              <h3>Discharge (cfs, Cubic feet per second)</h3>
+              <canvas id="chart-discharge"></canvas>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      Discharge data from discharge.xlsx. X-axis: 1950–2025. Y-axis: cfs (cubic feet per second).
+    </footer>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
