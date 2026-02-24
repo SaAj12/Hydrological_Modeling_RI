@@ -1,0 +1,12 @@
+https://zenodo.org/records/18021752
+https://github.com/NASA-AMMOS/MGViz
+
+https://mgviz.ucsd.edu/?mission=MGViz
+https://mesonet.agron.iastate.edu/vtec/search.php?mode=bypoint)
+https://link.springer.com/article/10.1007/s10291-014-0403-7
+https://giovanni.gsfc.nasa.gov/giovanni/
+https://dataverse.ucla.edu/dataset.xhtml?persistentId=doi:10.25346/S6/ZSW7UN
+https://gdex.ucar.edu/datasets/d651018/
+http://garner.ucsd.edu/pub/measuresESESES_products/Troposphere/
+https://www.earthdata.nasa.gov/data/catalog/cddis-measures-seses-prod-dly-5min-ppp-tropo-est-1
+https://github.com/TheProParadox/TACLS_code

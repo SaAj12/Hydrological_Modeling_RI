@@ -110,6 +110,30 @@
     return idDisplay || "—";
   }
 
+  function updateVtecFigure(stationId) {
+    const wrap = get("vtec-figure-wrap");
+    const img = get("vtec-figure");
+    const noData = get("vtec-no-data");
+    if (!wrap || !img || !noData) return;
+    const staid8 = formatStationIdDisplay(stationId);
+    const base = (location.pathname && location.pathname !== "/" && location.pathname !== "/index.html")
+      ? location.pathname.replace(/\/[^/]*$/, "/")
+      : "";
+    const src = base + "images/vtec/vtec_timeline_" + staid8 + ".png";
+    img.classList.add("hidden");
+    noData.classList.add("hidden");
+    wrap.classList.remove("hidden");
+    img.onerror = function () {
+      img.classList.add("hidden");
+      noData.classList.remove("hidden");
+    };
+    img.onload = function () {
+      img.classList.remove("hidden");
+      noData.classList.add("hidden");
+    };
+    img.src = src;
+  }
+
   function loadDischargeStation(stationId, lat, lon, displayName) {
     const meta = (lat != null && lon != null)
       ? "Lat " + Number(lat).toFixed(4) + "°, Lon " + Number(lon).toFixed(4) + "°"
@@ -117,6 +141,7 @@
     const idDisplay = formatStationIdDisplay(stationId);
     const title = displayName ? displayName + " (" + idDisplay + ")" : idDisplay;
     showPanel({ name: title }, { meta: meta });
+    updateVtecFigure(stationId);
 
     if (!dischargeData || !dischargeData.series) {
       get("point-meta").textContent = "No discharge data available.";

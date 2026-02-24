@@ -130,6 +130,26 @@ body {
   height: 220px !important;
   display: block;
 }
+.vtec-wrap {
+  height: auto;
+  min-height: 120px;
+}
+.vtec-wrap .vtec-img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+.vtec-wrap .vtec-img.hidden {
+  display: none;
+}
+.vtec-no-data {
+  margin: 0.5rem 0 0 0;
+  font-size: 0.85rem;
+  color: #8b949e;
+}
+.vtec-no-data.hidden {
+  display: none;
+}
 .footer {
   padding: 0.5rem 1rem;
   font-size: 0.75rem;
