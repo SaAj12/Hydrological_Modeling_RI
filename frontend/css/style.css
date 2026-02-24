@@ -131,6 +131,7 @@ body {
   display: block;
 }
 .vtec-wrap {
+  margin-top: 1.5rem;
   height: auto;
   min-height: 120px;
 }

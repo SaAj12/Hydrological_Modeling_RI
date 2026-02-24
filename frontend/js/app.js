@@ -85,7 +85,7 @@
             backgroundColor: "rgba(63, 185, 80, 0.1)",
             fill: true,
             tension: 0.1,
-            borderWidth: 1,
+            borderWidth: 2.5,
           }],
         },
         options: chartOptions,
