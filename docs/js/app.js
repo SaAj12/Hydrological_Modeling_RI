@@ -116,9 +116,12 @@
     const noData = get("vtec-no-data");
     if (!wrap || !img || !noData) return;
     const staid8 = formatStationIdDisplay(stationId);
-    const base = (location.pathname && location.pathname !== "/" && location.pathname !== "/index.html")
-      ? location.pathname.replace(/\/[^/]*$/, "/")
-      : "";
+    // GitHub Pages: pathname is e.g. /Hydrological-Modeling/ or /Hydrological-Modeling/index.html
+    let base = "";
+    if (location.pathname && location.pathname !== "/" && location.pathname !== "/index.html") {
+      base = location.pathname.replace(/\/[^/]*$/, "/");
+      if (base && !base.endsWith("/")) base += "/";
+    }
     const src = base + "images/vtec/vtec_timeline_" + staid8 + ".png";
     img.classList.add("hidden");
     noData.classList.add("hidden");
