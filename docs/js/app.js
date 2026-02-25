@@ -59,7 +59,7 @@
         grid: { color: "#21262d" },
         type: "time",
         time: { unit: "year", displayFormats: { year: "yyyy", month: "MMM yyyy" } },
-        min: "1950-01-01",
+        min: "2010-01-01",
         max: "2025-12-31",
       },
       y: {
@@ -149,26 +149,50 @@
     return "https://waterdata.usgs.gov/monitoring-location/USGS-" + id8 + "/#dataTypeId=continuous-00060-0&period=P7D&showFieldMeasurements=true";
   }
 
-  function updateWaterLevelFigureForStation() {
+  function getBasePath() {
+    var path = location.pathname || "";
+    if (path && path !== "/" && path !== "/index.html") {
+      var segs = path.split("/").filter(Boolean);
+      if (segs.length > 0) return "/" + segs[0] + "/";
+    }
+    return "";
+  }
+
+  function updateWaterLevelFigureForStation(noaaId) {
     var wrap = get("water-level-wrap");
     var img = get("water-level-figure");
     var noData = get("water-level-no-data");
     if (!wrap || !img || !noData) return;
     wrap.classList.remove("hidden");
-    var base = "";
-    var path = location.pathname || "";
-    if (path && path !== "/" && path !== "/index.html") {
-      var segs = path.split("/").filter(Boolean);
-      if (segs.length > 0) base = "/" + segs[0] + "/";
-    }
-    var src = base + "images/noaa/8454000_water_level_with_predictions.png";
+    var base = getBasePath();
+    var id = noaaId || "8454000";
+    var src = base + "images/noaa/" + id + "_water_level_with_predictions.png";
     img.classList.add("hidden");
     noData.classList.add("hidden");
+    img.onerror = function () {
+      img.src = base + "images/noaa/8454000_water_level_with_predictions.png";
+    };
+    img.onload = function () {
+      img.classList.remove("hidden");
+      noData.classList.add("hidden");
+    };
+    img.src = src;
+  }
+
+  function updatePrecipitationFigure(noaaId) {
+    var wrap = get("precipitation-wrap");
+    var img = get("precipitation-figure");
+    var noData = get("precipitation-no-data");
+    if (!wrap || !img || !noData) return;
     wrap.classList.remove("hidden");
+    var base = getBasePath();
+    var src = base + "images/noaa/precipitation_" + (noaaId || "") + ".png";
+    img.classList.add("hidden");
+    noData.classList.add("hidden");
     img.onerror = function () {
       img.classList.add("hidden");
       noData.classList.remove("hidden");
-      noData.textContent = "No water level data available.";
+      noData.textContent = "No precipitation data available.";
     };
     img.onload = function () {
       img.classList.remove("hidden");
@@ -187,8 +211,10 @@
     get("discharge-chart-wrap").classList.add("hidden");
     get("vtec-figure-wrap").classList.add("hidden");
     get("water-level-wrap").classList.remove("hidden");
+    get("precipitation-wrap").classList.remove("hidden");
     destroyCharts();
-    updateWaterLevelFigureForStation();
+    updateWaterLevelFigureForStation(s && s.id ? s.id : null);
+    updatePrecipitationFigure(s && s.id ? s.id : null);
   }
 
   function loadDischargeStation(stationId, lat, lon, displayName) {
@@ -197,6 +223,7 @@
     get("discharge-chart-wrap").classList.remove("hidden");
     get("vtec-figure-wrap").classList.remove("hidden");
     get("water-level-wrap").classList.add("hidden");
+    get("precipitation-wrap").classList.add("hidden");
     var meta = (lat != null && lon != null)
       ? "Lat " + Number(lat).toFixed(4) + "°, Lon " + Number(lon).toFixed(4) + "°"
       : "Discharge station";

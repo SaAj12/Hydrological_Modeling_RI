@@ -1,6 +1,6 @@
 """
 Export NOAA Tides & Currents stations to JSON for the Hydrological Modeling map.
-Reads from D:\\go\\pr\\noaa\\noaa_stations_in_domain.csv (or --input).
+Reads from PROJECT_ROOT/noaa/noaa_stations_in_domain.csv (or --input).
 Output: frontend/data/noaa_stations.json, docs/data/noaa_stations.json
 """
 import csv
@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_INPUT = Path(r"D:\go\pr\noaa\noaa_stations_in_domain.csv")
+DEFAULT_INPUT = PROJECT_ROOT / "noaa" / "noaa_stations_in_domain.csv"
 
 
 def main():

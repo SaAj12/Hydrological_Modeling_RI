@@ -15,7 +15,7 @@
   <div class="app">
     <header class="header">
       <h1>Hydrological Modeling</h1>
-      <p class="subtitle">Discharge data at monitoring stations — click a station on the map or select from the list to view time series</p>
+      <p class="subtitle">Data at USGS and NOAA monitoring stations — click a station on the map or select from the list to view time series</p>
       <div class="search-bar">
         <label>USGS stations:</label>
         <select id="discharge-select">
@@ -29,7 +29,6 @@
     </header>
 
     <main class="main">
-      <div id="map" class="map"></div>
       <aside class="panel">
         <div id="panel-placeholder" class="placeholder">
           Click a station on the map or select from the dropdown to view discharge time series.
@@ -52,13 +51,19 @@
               <img id="water-level-figure" src="" alt="Water level time series" class="vtec-img" />
               <p id="water-level-no-data" class="vtec-no-data hidden">No water level data available.</p>
             </div>
+            <div id="precipitation-wrap" class="chart-wrap vtec-wrap hidden">
+              <h3>Precipitation (GPM IMERG)</h3>
+              <img id="precipitation-figure" src="" alt="Precipitation time series" class="vtec-img" />
+              <p id="precipitation-no-data" class="vtec-no-data hidden">No precipitation data available.</p>
+            </div>
           </div>
         </div>
       </aside>
+      <div id="map" class="map"></div>
     </main>
 
     <footer class="footer">
-      Discharge data from discharge.xlsx. X-axis: 1950–2025. Y-axis: cfs (cubic feet per second).
+      Brown University - DEEP Department
     </footer>
   </div>
 

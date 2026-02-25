@@ -1,5 +1,5 @@
 @echo off
-title Build for Hydrological Modeling (viewer2)
+title Build for Hydrological Modeling (viewer3)
 cd /d "%~dp0"
 
 echo Exporting discharge data...
@@ -14,9 +14,30 @@ echo.
 echo Exporting NOAA stations...
 python scripts/export_noaa_stations.py
 if errorlevel 1 (
-  echo NOAA export failed. Ensure D:\go\pr\noaa\noaa_stations_in_domain.csv exists.
+  echo NOAA export failed. Ensure noaa/noaa_stations_in_domain.csv exists.
   pause
   exit /b 1
+)
+
+echo.
+echo Plotting VTEC timelines...
+python scripts/plot_vtec_timeline_all_stations.py
+if errorlevel 1 (
+  echo VTEC plot failed. Ensure docs/vtec_by_usgs/*.csv exist.
+)
+
+echo.
+echo Plotting NOAA precipitation...
+python scripts/plot_precipitation_noaa_stations.py
+if errorlevel 1 (
+  echo Precipitation plot failed. Ensure pr_extracted/ exists.
+)
+
+echo.
+echo Plotting NOAA water level...
+python scripts/plot_noaa_water_level_with_predictions.py
+if errorlevel 1 (
+  echo Water level plot failed. Ensure noaa/8454000_water_level.csv and 8454000_predictions.csv exist.
 )
 
 echo.

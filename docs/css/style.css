@@ -69,8 +69,8 @@ body {
   min-height: 0;
 }
 .map {
-  flex: 1;
-  min-width: 0;
+  flex: 0 0 35%;
+  min-width: 280px;
   min-height: 320px;
 }
 .map-legend {
@@ -100,11 +100,13 @@ body {
   vertical-align: middle;
 }
 .panel {
-  width: 420px;
-  max-width: 100%;
+  flex: 1;
+  min-width: 420px;
+  width: auto;
+  max-width: none;
   overflow-y: auto;
   background: #161b22;
-  border-left: 1px solid #30363d;
+  border-right: 1px solid #30363d;
   padding: 1rem;
 }
 .panel .placeholder {
@@ -145,7 +147,7 @@ body {
   border: 1px solid #30363d;
   border-radius: 8px;
   padding: 0.5rem;
-  margin-bottom: 0.25rem;
+  margin-bottom: 1.25rem;
 }
 .chart-wrap:last-child {
   margin-bottom: 0;
@@ -166,8 +168,9 @@ body {
   display: block;
 }
 .vtec-wrap,
-#water-level-wrap {
-  margin-top: 0.25rem;
+#water-level-wrap,
+#precipitation-wrap {
+  margin-top: 1rem;
   min-height: 220px;
   height: auto !important;
   display: flex !important;
@@ -175,7 +178,8 @@ body {
   align-items: stretch;
 }
 .vtec-wrap h3,
-#water-level-wrap h3 {
+#water-level-wrap h3,
+#precipitation-wrap h3 {
   flex-shrink: 0;
   text-align: left;
   width: 100%;
@@ -183,7 +187,8 @@ body {
   margin-bottom: 0.25rem;
 }
 .vtec-wrap .vtec-img,
-#water-level-wrap .vtec-img {
+#water-level-wrap .vtec-img,
+#precipitation-wrap .vtec-img {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;

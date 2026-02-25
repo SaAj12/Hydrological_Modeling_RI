@@ -15,17 +15,16 @@
   <div class="app">
     <header class="header">
       <h1>Hydrological Modeling</h1>
-      <p class="subtitle">Discharge data at monitoring stations — click a station on the map or select from the list to view time series</p>
+      <p class="subtitle">Data at USGS and NOAA monitoring stations — click a station on the map or select from the list to view time series</p>
       <div class="search-bar">
-        <label>Station:</label>
+        <label>USGS stations:</label>
         <select id="discharge-select">
           <option value="">— select station —</option>
         </select>
-        <span class="search-bar-sep">|</span>
-        <span class="layer-options">
-          <label class="layer-cb"><input type="checkbox" id="layer-watershed"> Watershed</label>
-          <label class="layer-cb"><input type="checkbox" id="layer-dem"> DEM</label>
-        </span>
+        <label>NOAA stations:</label>
+        <select id="noaa-select">
+          <option value="">— select station —</option>
+        </select>
       </div>
     </header>
 
@@ -49,7 +48,7 @@
     </main>
 
     <footer class="footer">
-      Discharge data from discharge.xlsx. X-axis: 1950–2025. Y-axis: m³/s (cubic meters per second).
+      Brown University - DEEP Department
     </footer>
   </div>
 

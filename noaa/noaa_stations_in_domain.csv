@@ -1,0 +1,15 @@
+id,name,lat,lon,state,shefcode,timezone,tidal,greatlakes,affiliations,url,types
+8444069,"Castle Island, North of",42.340862,-71.01234,MA,CSIM3,EST,True,False,PORTS,"https://tidesandcurrents.noaa.gov/stationhome.html?id=8444069&name=Castle%20Island,%20North%20of&state=MA",
+8447386,Fall River,41.7043,-71.1641,MA,FRVM3,EST,True,False,"PORTS,Global",https://tidesandcurrents.noaa.gov/stationhome.html?id=8447386&name=Fall%20River&state=MA,
+8447387,Borden Flats Light at Fall River,41.705,-71.1733,MA,BLTM3,EST,True,False,PORTS,https://tidesandcurrents.noaa.gov/stationhome.html?id=8447387&name=Borden%20Flats%20Light%20at%20Fall%20River&state=MA,
+8447412,Fall River Visibility,41.695835,-71.17983,MA,FRXM3,EST,True,False,,https://tidesandcurrents.noaa.gov/stationhome.html?id=8447412&name=Fall%20River%20Visibility&state=MA,
+8447627,"New Bedford, Barrier Gate",41.624443,-70.90544,MA,NBGM3,EST,True,False,,"https://tidesandcurrents.noaa.gov/stationhome.html?id=8447627&name=New%20Bedford,%20Barrier%20Gate&state=MA",
+8447636,New Bedford Harbor,41.6212,-70.9137,MA,NBFM3,EST,True,False,PORTS,https://tidesandcurrents.noaa.gov/stationhome.html?id=8447636&name=New%20Bedford%20Harbor&state=MA,
+8452314,"Sandy Point Visibility, Prudence Island",41.605118,-71.30424,RI,PRUR1,EST,True,False,,"https://tidesandcurrents.noaa.gov/stationhome.html?id=8452314&name=Sandy%20Point%20Visibility,%20Prudence%20Island&state=RI",
+8452660,Newport,41.504333,-71.32614,RI,NWPR1,EST,True,False,NWLORTS,https://tidesandcurrents.noaa.gov/stationhome.html?id=8452660&name=Newport&state=RI,
+8452944,Conimicut Light,41.7167,-71.3433,RI,CPTR1,EST,True,False,PORTS,https://tidesandcurrents.noaa.gov/stationhome.html?id=8452944&name=Conimicut%20Light&state=RI,
+8452951,"Potter Cove, Prudence Island",41.637165,-71.33928,RI,PTCR1,EST,True,False,PORTS,"https://tidesandcurrents.noaa.gov/stationhome.html?id=8452951&name=Potter%20Cove,%20Prudence%20Island&state=RI",
+8453662,Providence Visibility,41.785694,-71.38308,RI,PVDR1,EST,True,False,,https://tidesandcurrents.noaa.gov/stationhome.html?id=8453662&name=Providence%20Visibility&state=RI,visibility
+8454000,Providence,41.807167,-71.400665,RI,FOXR1,EST,True,False,NWLORTS,https://tidesandcurrents.noaa.gov/stationhome.html?id=8454000&name=Providence&state=RI,
+8454123,Port of Davisville,41.61122,-71.41031,RI,PDVR1,EST,True,False,,https://tidesandcurrents.noaa.gov/stationhome.html?id=8454123&name=Port%20of%20Davisville&state=RI,
+8461490,New London,41.371666,-72.09556,CT,NLHC3,EST,True,False,NWLORTS,https://tidesandcurrents.noaa.gov/stationhome.html?id=8461490&name=New%20London&state=CT,waterlevelsandmet

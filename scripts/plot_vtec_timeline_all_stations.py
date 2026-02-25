@@ -1,7 +1,7 @@
 """
 Plot VTEC timeline for every station for the Hydrological Modeling GitHub Page.
 Reads vtec_events_<STAID>.csv from docs/vtec_by_usgs, plots only selected warning
-classes, x-axis 1 Jan 1950–31 Dec 2025, y-axis warning_name. Writes PNGs to
+classes, x-axis 1 Jan 2010–31 Dec 2025, y-axis warning_name. Writes PNGs to
 docs/images/vtec/ so https://saaj12.github.io/Hydrological-Modeling/ can show
 each figure below the discharge chart for the corresponding station.
 
@@ -35,7 +35,7 @@ ALLOWED_WARNING_NAMES = [
     "Winter Storm Warning",
 ]
 ALLOWED_SET = frozenset(ALLOWED_WARNING_NAMES)
-X_MIN = datetime(1950, 1, 1)
+X_MIN = datetime(2010, 1, 1)
 X_MAX = datetime(2025, 12, 31)
 
 
@@ -102,11 +102,11 @@ def plot_one(csv_path: str, output_path: str, station_id: str) -> bool:
     ax.set_ylabel("")
     ax.set_title(f"VTEC events — Station {station_id}", fontsize=14)
     ax.xaxis_date()
-    # Fixed x-axis: 1 Jan 1950 – 31 Dec 2025 (match discharge chart)
+    # Fixed x-axis: 1 Jan 2010 – 31 Dec 2025 (match discharge chart)
     ax.set_xlim(mdates.date2num(X_MIN), mdates.date2num(X_MAX))
     # Same style as discharge: years only, 10-year increment (1950, 1960, 1970, ...)
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
-    ax.xaxis.set_major_locator(mdates.YearLocator(10))
+    ax.xaxis.set_major_locator(mdates.YearLocator(5))
     ax.tick_params(axis="both", labelsize=14)
     plt.xticks(rotation=0)
     plt.tight_layout()
@@ -118,7 +118,7 @@ def plot_one(csv_path: str, output_path: str, station_id: str) -> bool:
 
 def main():
     p = argparse.ArgumentParser(
-        description="Plot VTEC timeline per station for GitHub Page (1950–2025, selected warning types)"
+        description="Plot VTEC timeline per station for GitHub Page (2010–2025, selected warning types)"
     )
     p.add_argument(
         "--input-dir", "-i", default=DEFAULT_INPUT_DIR,
@@ -157,7 +157,7 @@ def main():
         sys.exit(1)
 
     print("Warning types plotted:", ", ".join(ALLOWED_WARNING_NAMES))
-    print("X-axis: 1950-01-01 to 2025-12-31")
+    print("X-axis: 2010-01-01 to 2025-12-31")
     ok = 0
     for staid, csv_path in files:
         out_path = os.path.join(output_dir, f"vtec_timeline_{staid}.png")

@@ -2,7 +2,7 @@
 Fetch GPM IMERG precipitation data for a bounding box.
 Data source: GPM_3IMERGDF.07 (daily, 0.1 deg).
 Requires: Earthdata Login + .netrc, and pip install harmony-py xarray s3fs (or earthaccess).
-Move this script to D:\\go\\pr and run from there.
+Run from project root (D:\\Brown\\SWAT\\viewer3) or D:\\go\\pr.
 """
 # Region (your box)
 NORTH = 42.350747

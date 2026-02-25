@@ -1,12 +1,7 @@
 """
-Copy VTEC timeline PNGs from the pr project into the viewer docs so the
-Hydrological Modeling GitHub Page can show them per station.
-
-Source: D:\\go\\pr\\vtec_by_usgs\\vtec_timeline_*.png
-Target: viewer2/docs/images/vtec/
-
-Run from viewer2 repo: python scripts/copy_vtec_figures.py
-Override source: python scripts/copy_vtec_figures.py --source "D:\\other\\vtec_by_usgs"
+Copy VTEC timeline PNGs into docs/images/vtec for the Hydrological Modeling GitHub Page.
+Source: PROJECT_ROOT/data/vtec_figures or --source. If not found, use plot_vtec_timeline_all_stations.py
+to generate PNGs from docs/vtec_by_usgs/*.csv (output goes directly to docs/images/vtec/).
 """
 import argparse
 import shutil
@@ -14,7 +9,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DOCS = PROJECT_ROOT / "docs"
-DEFAULT_SOURCE = Path(r"D:\go\pr\vtec_by_usgs")
+DEFAULT_SOURCE = PROJECT_ROOT / "data" / "vtec_figures"
 VTEC_IMAGES_DIR = DOCS / "images" / "vtec"
 
 
@@ -24,7 +19,7 @@ def main():
         "--source", "-s",
         type=Path,
         default=DEFAULT_SOURCE,
-        help=f"Folder containing vtec_timeline_<STAID>.png (default: {DEFAULT_SOURCE})",
+        help=f"Folder containing vtec_timeline_<STAID>.png (default: PROJECT_ROOT/data/vtec_figures)",
     )
     args = p.parse_args()
     src_dir = args.source
