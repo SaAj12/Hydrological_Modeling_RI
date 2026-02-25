@@ -1,7 +1,7 @@
 """
 Copy VTEC timeline PNGs into docs/images/vtec for the Hydrological Modeling GitHub Page.
 Source: PROJECT_ROOT/data/vtec_figures or --source. If not found, use plot_vtec_timeline_all_stations.py
-to generate PNGs from docs/vtec_by_usgs/*.csv (output goes directly to docs/images/vtec/).
+to generate PNGs from docs/vtec_by_usgs_and_noaa/*.csv (output goes directly to docs/images/vtec/).
 """
 import argparse
 import shutil

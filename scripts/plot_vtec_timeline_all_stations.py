@@ -1,6 +1,6 @@
 """
 Plot VTEC timeline for every station for the Hydrological Modeling GitHub Page.
-Reads vtec_events_<STAID>.csv from docs/vtec_by_usgs, plots only selected warning
+Reads vtec_events_<STAID>.csv from docs/vtec_by_usgs_and_noaa, plots only selected warning
 classes, x-axis 1 Jan 2010–31 Dec 2025, y-axis warning_name. Writes PNGs to
 docs/images/vtec/ so https://saaj12.github.io/Hydrological-Modeling/ can show
 each figure below the discharge chart for the corresponding station.
@@ -21,7 +21,7 @@ from datetime import datetime
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(_SCRIPT_DIR)
 DOCS = os.path.join(PROJECT_ROOT, "docs")
-DEFAULT_INPUT_DIR = os.path.join(DOCS, "vtec_by_usgs")
+DEFAULT_INPUT_DIR = os.path.join(DOCS, "vtec_by_usgs_and_noaa")
 DEFAULT_OUTPUT_DIR = os.path.join(DOCS, "images", "vtec")
 
 # Plot ONLY these 7 warning types, in this y-axis order (matches discharge chart era 1950–2025)
@@ -122,7 +122,7 @@ def main():
     )
     p.add_argument(
         "--input-dir", "-i", default=DEFAULT_INPUT_DIR,
-        help="Directory containing vtec_events_<STAID>.csv (default: docs/vtec_by_usgs)",
+        help="Directory containing vtec_events_<STAID>.csv (default: docs/vtec_by_usgs_and_noaa)",
     )
     p.add_argument(
         "--output-dir", "-o", default=DEFAULT_OUTPUT_DIR,

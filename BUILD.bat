@@ -20,10 +20,17 @@ if errorlevel 1 (
 )
 
 echo.
+echo Fetching VTEC for USGS and NOAA stations...
+python scripts/fetch_vtec_by_usgs_and_noaa_locations.py
+if errorlevel 1 (
+  echo VTEC fetch failed. Ensure usgs_locations.xlsx and noaa/noaa_stations_in_domain.csv exist.
+)
+
+echo.
 echo Plotting VTEC timelines...
 python scripts/plot_vtec_timeline_all_stations.py
 if errorlevel 1 (
-  echo VTEC plot failed. Ensure docs/vtec_by_usgs/*.csv exist.
+  echo VTEC plot failed. Ensure docs/vtec_by_usgs_and_noaa/*.csv exist.
 )
 
 echo.

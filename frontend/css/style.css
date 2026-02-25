@@ -134,8 +134,10 @@ body {
 .panel .meta a:hover {
   text-decoration: underline;
 }
-.chart-wrap.hidden {
-  display: none;
+.chart-wrap.hidden,
+#water-level-wrap.hidden,
+#precipitation-wrap.hidden {
+  display: none !important;
 }
 .charts {
   display: flex;
