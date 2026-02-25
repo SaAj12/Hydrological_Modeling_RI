@@ -265,11 +265,13 @@
         console.warn("Backend not available, loading static data:", e.message);
       }
     }
-    var dataUrl = "data/discharge_data.json";
-    if (location.pathname && location.pathname !== "/" && location.pathname !== "/index.html") {
-      var base = location.pathname.replace(/\/[^/]*$/, "/");
-      dataUrl = base + (base.indexOf("data/") === -1 ? "data/discharge_data.json" : "discharge_data.json");
+    var base = "";
+    var path = location.pathname || "";
+    if (path && path !== "/" && path !== "/index.html") {
+      var segs = path.split("/").filter(Boolean);
+      if (segs.length > 0) base = "/" + segs[0] + "/";
     }
+    var dataUrl = base + "data/discharge_data.json";
     try {
       var res = await fetch(dataUrl);
       if (!res.ok) throw new Error(res.statusText);
@@ -284,11 +286,13 @@
 
   async function loadNoaaStations() {
     if (noaaStations.length > 0) return noaaStations;
-    var dataUrl = "data/noaa_stations.json";
-    if (location.pathname && location.pathname !== "/" && location.pathname !== "/index.html") {
-      var base = location.pathname.replace(/\/[^/]*$/, "/");
-      dataUrl = base + (base.indexOf("data/") === -1 ? "data/noaa_stations.json" : "noaa_stations.json");
+    var base = "";
+    var path = location.pathname || "";
+    if (path && path !== "/" && path !== "/index.html") {
+      var segments = path.split("/").filter(Boolean);
+      if (segments.length > 0) base = "/" + segments[0] + "/";
     }
+    var dataUrl = base + "data/noaa_stations.json";
     try {
       var res = await fetch(dataUrl);
       if (!res.ok) return [];
@@ -410,20 +414,22 @@
     });
 
     var noaaSelect = get("noaa-select");
-    noaaList.forEach(function (s) {
-      var label = (s.name && s.name.trim()) ? s.name + " (" + (s.id || "") + ")" : (s.id || "NOAA");
-      var opt = document.createElement("option");
-      opt.value = s.id;
-      opt.textContent = label;
-      noaaSelect.appendChild(opt);
-    });
-    noaaSelect.addEventListener("change", function () {
-      var v = this.value;
-      if (!v) return;
-      get("discharge-select").value = "";
-      var s = noaaList.find(function (st) { return st.id === v; });
-      if (s) loadNoaaStation(s);
-    });
+    if (noaaSelect) {
+      noaaList.forEach(function (s) {
+        var label = (s.name && s.name.trim()) ? s.name + " (" + (s.id || "") + ")" : (s.id || "NOAA");
+        var opt = document.createElement("option");
+        opt.value = s.id || "";
+        opt.textContent = label;
+        noaaSelect.appendChild(opt);
+      });
+      noaaSelect.addEventListener("change", function () {
+        var v = this.value;
+        if (!v) return;
+        get("discharge-select").value = "";
+        var s = noaaList.find(function (st) { return String(st.id) === String(v); });
+        if (s) loadNoaaStation(s);
+      });
+    }
   }
 
   async function init() {
