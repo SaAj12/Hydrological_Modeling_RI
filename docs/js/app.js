@@ -137,6 +137,31 @@
     img.src = src;
   }
 
+  function updateWaterLevelFigure() {
+    const wrap = get("water-level-wrap");
+    const img = get("water-level-figure");
+    const noData = get("water-level-no-data");
+    if (!wrap || !img || !noData) return;
+    let base = "";
+    if (location.pathname && location.pathname !== "/" && location.pathname !== "/index.html") {
+      base = location.pathname.replace(/\/[^/]*$/, "/");
+      if (base && !base.endsWith("/")) base += "/";
+    }
+    const src = base + "images/noaa/8454000_water_level_with_predictions.png";
+    img.classList.add("hidden");
+    noData.classList.add("hidden");
+    wrap.classList.remove("hidden");
+    img.onerror = function () {
+      img.classList.add("hidden");
+      noData.classList.remove("hidden");
+    };
+    img.onload = function () {
+      img.classList.remove("hidden");
+      noData.classList.add("hidden");
+    };
+    img.src = src;
+  }
+
   function loadDischargeStation(stationId, lat, lon, displayName) {
     const meta = (lat != null && lon != null)
       ? "Lat " + Number(lat).toFixed(4) + "°, Lon " + Number(lon).toFixed(4) + "°"
@@ -145,6 +170,7 @@
     const title = displayName ? displayName + " (" + idDisplay + ")" : idDisplay;
     showPanel({ name: title }, { meta: meta });
     updateVtecFigure(stationId);
+    updateWaterLevelFigure();
 
     if (!dischargeData || !dischargeData.series) {
       get("point-meta").textContent = "No discharge data available.";
