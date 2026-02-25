@@ -165,24 +165,32 @@ body {
   height: 220px !important;
   display: block;
 }
-.vtec-wrap {
+.vtec-wrap,
+#water-level-wrap {
   margin-top: 0.25rem;
   min-height: 220px;
-  display: flex;
-  flex-direction: column;
+  height: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
   align-items: stretch;
 }
-.vtec-wrap h3 {
+.vtec-wrap h3,
+#water-level-wrap h3 {
   flex-shrink: 0;
   text-align: left;
+  width: 100%;
+  display: block;
+  margin-bottom: 0.25rem;
 }
-.vtec-wrap .vtec-img {
+.vtec-wrap .vtec-img,
+#water-level-wrap .vtec-img {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
   display: block;
   flex: 1;
-  min-height: 180px;
+  min-height: 160px;
+  width: 100%;
 }
 .vtec-wrap .vtec-img.hidden {
   display: none;
