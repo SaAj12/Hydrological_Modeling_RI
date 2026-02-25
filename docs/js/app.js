@@ -117,14 +117,21 @@
     return idDisplay || "—";
   }
 
+  /** VTEC image uses raw id for NOAA (7-digit, e.g. 8444069) and padded for USGS (8-digit, e.g. 01108000) */
+  function vtecImageId(stationId) {
+    const s = String(stationId).trim();
+    if (/^\d{7}$/.test(s) && parseInt(s, 10) >= 8000000) return s;  // NOAA tide station ids
+    return formatStationIdDisplay(stationId);
+  }
+
   function updateVtecFigure(stationId) {
     const wrap = get("vtec-figure-wrap");
     const img = get("vtec-figure");
     const noData = get("vtec-no-data");
     if (!wrap || !img || !noData) return;
-    const staid8 = formatStationIdDisplay(stationId);
+    const idForImage = vtecImageId(stationId);
     const base = getBasePath();
-    const src = base + "images/vtec/vtec_timeline_" + staid8 + ".png";
+    const src = base + "images/vtec/vtec_timeline_" + idForImage + ".png";
     img.classList.add("hidden");
     noData.classList.add("hidden");
     wrap.classList.remove("hidden");
@@ -198,6 +205,7 @@
   }
 
   function loadNoaaStation(s) {
+    get("discharge-select").value = "";
     var meta = (s && s.lat != null && s.lon != null)
       ? "Lat " + Number(s.lat).toFixed(4) + "°, Lon " + Number(s.lon).toFixed(4) + "° — NOAA tide/water level"
       : "NOAA tide/water level station";
@@ -205,20 +213,26 @@
     var label = (s && s.name && s.name.trim()) ? s.name + " (" + (s.id || "") + ")" : (s ? s.id : "NOAA station");
     showPanel({ name: label }, { meta: meta });
     get("discharge-chart-wrap").classList.add("hidden");
-    get("vtec-figure-wrap").classList.add("hidden");
+    get("vtec-figure-wrap").classList.remove("hidden");
     get("water-level-wrap").classList.remove("hidden");
     get("precipitation-wrap").classList.remove("hidden");
     destroyCharts();
+    updateVtecFigure(s && s.id ? s.id : null);
     updateWaterLevelFigureForStation(s && s.id ? s.id : null);
     updatePrecipitationFigure(s && s.id ? s.id : null);
   }
 
   function loadDischargeStation(stationId, lat, lon, displayName) {
-    get("discharge-select").value = stationId || "";
     get("noaa-select").value = "";
+    get("discharge-select").value = stationId || "";
     get("discharge-chart-wrap").classList.remove("hidden");
     get("vtec-figure-wrap").classList.remove("hidden");
-    get("water-level-wrap").classList.add("hidden");
+    var waterWrap = get("water-level-wrap");
+    if (waterWrap) {
+      waterWrap.classList.add("hidden");
+      var waterImg = get("water-level-figure");
+      if (waterImg) waterImg.src = "";
+    }
     get("precipitation-wrap").classList.add("hidden");
     var meta = (lat != null && lon != null)
       ? "Lat " + Number(lat).toFixed(4) + "°, Lon " + Number(lon).toFixed(4) + "°"
@@ -366,8 +380,9 @@
       });
       marker.bindTooltip("NOAA: " + label, { permanent: false });
       marker.on("click", function () {
-        loadNoaaStation(s);
+        get("discharge-select").value = "";
         get("noaa-select").value = s ? s.id : "";
+        loadNoaaStation(s);
       });
       noaaLayer.addLayer(marker);
     });
