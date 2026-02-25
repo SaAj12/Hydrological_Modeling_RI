@@ -143,23 +143,37 @@
     img.src = src;
   }
 
-  function updateWaterLevelFigure() {
-    const wrap = get("water-level-wrap");
-    const img = get("water-level-figure");
-    const noData = get("water-level-no-data");
+  function usgsStationUrl(stationId) {
+    var id8 = formatStationIdDisplay(stationId);
+    if (!id8) return null;
+    return "https://waterdata.usgs.gov/monitoring-location/USGS-" + id8 + "/#dataTypeId=continuous-00060-0&period=P7D&showFieldMeasurements=true";
+  }
+
+  function updateWaterLevelFigureForStation(noaaStationId) {
+    var wrap = get("water-level-wrap");
+    var img = get("water-level-figure");
+    var noData = get("water-level-no-data");
     if (!wrap || !img || !noData) return;
-    let base = "";
+    wrap.classList.remove("hidden");
+    if (!noaaStationId || noaaStationId !== "8454000") {
+      img.classList.add("hidden");
+      noData.classList.remove("hidden");
+      noData.textContent = noaaStationId ? "No water level data for this station." : "No water level data available.";
+      return;
+    }
+    var base = "";
     if (location.pathname && location.pathname !== "/" && location.pathname !== "/index.html") {
       base = location.pathname.replace(/\/[^/]*$/, "/");
       if (base && !base.endsWith("/")) base += "/";
     }
-    const src = base + "images/noaa/8454000_water_level_with_predictions.png";
+    var src = base + "images/noaa/8454000_water_level_with_predictions.png";
     img.classList.add("hidden");
     noData.classList.add("hidden");
     wrap.classList.remove("hidden");
     img.onerror = function () {
       img.classList.add("hidden");
       noData.classList.remove("hidden");
+      noData.textContent = "No water level data available.";
     };
     img.onload = function () {
       img.classList.remove("hidden");
@@ -169,30 +183,34 @@
   }
 
   function loadNoaaStation(s) {
-    let meta = (s.lat != null && s.lon != null)
+    var meta = (s && s.lat != null && s.lon != null)
       ? "Lat " + Number(s.lat).toFixed(4) + "°, Lon " + Number(s.lon).toFixed(4) + "° — NOAA tide/water level"
       : "NOAA tide/water level station";
-    if (s.url) meta += ' <a href="' + s.url + '" target="_blank" rel="noopener">View on NOAA Tides & Currents</a>';
-    const label = (s.name && s.name.trim()) ? s.name + " (" + (s.id || "") + ")" : (s.id || "NOAA station");
+    if (s && s.url) meta += ' <a href="' + s.url + '" target="_blank" rel="noopener">View on NOAA Tides & Currents</a>';
+    var label = (s && s.name && s.name.trim()) ? s.name + " (" + (s.id || "") + ")" : (s ? s.id : "NOAA station");
     showPanel({ name: label }, { meta: meta });
     get("discharge-chart-wrap").classList.add("hidden");
     get("vtec-figure-wrap").classList.add("hidden");
-    get("water-level-wrap").classList.add("hidden");
+    get("water-level-wrap").classList.remove("hidden");
     destroyCharts();
+    updateWaterLevelFigureForStation(s && s.id ? s.id : null);
   }
 
   function loadDischargeStation(stationId, lat, lon, displayName) {
+    get("discharge-select").value = stationId || "";
+    get("noaa-select").value = "";
     get("discharge-chart-wrap").classList.remove("hidden");
     get("vtec-figure-wrap").classList.remove("hidden");
-    get("water-level-wrap").classList.remove("hidden");
-    const meta = (lat != null && lon != null)
+    get("water-level-wrap").classList.add("hidden");
+    var meta = (lat != null && lon != null)
       ? "Lat " + Number(lat).toFixed(4) + "°, Lon " + Number(lon).toFixed(4) + "°"
       : "Discharge station";
-    const idDisplay = formatStationIdDisplay(stationId);
-    const title = displayName ? displayName + " (" + idDisplay + ")" : idDisplay;
+    var usgsUrl = usgsStationUrl(stationId);
+    if (usgsUrl) meta += ' <a href="' + usgsUrl + '" target="_blank" rel="noopener">View on USGS Water Data</a>';
+    var idDisplay = formatStationIdDisplay(stationId);
+    var title = displayName ? displayName + " (" + idDisplay + ")" : idDisplay;
     showPanel({ name: title }, { meta: meta });
     updateVtecFigure(stationId);
-    updateWaterLevelFigure();
 
     if (!dischargeData || !dischargeData.series) {
       get("point-meta").textContent = "No discharge data available.";
@@ -325,7 +343,10 @@
         fillOpacity: 0.9,
       });
       marker.bindTooltip("NOAA: " + label, { permanent: false });
-      marker.on("click", function () { loadNoaaStation(s); });
+      marker.on("click", function () {
+        loadNoaaStation(s);
+        get("noaa-select").value = s ? s.id : "";
+      });
       noaaLayer.addLayer(marker);
     });
 
@@ -357,9 +378,11 @@
           fillOpacity: 0.9,
         });
         marker.bindTooltip("Discharge: " + label, { permanent: false });
-        marker.on("click", async () => {
+        marker.on("click", async function () {
+          get("discharge-select").value = sid;
+          get("noaa-select").value = "";
           loadDischargeStation(sid, s.lat, s.lon, name !== sid ? name : null);
-          const series = await fetchStationSeries(sid);
+          var series = await fetchStationSeries(sid);
           if (series.length > 0) drawDischargeChart(series);
         });
         dischargeLayer.addLayer(marker);
@@ -375,14 +398,31 @@
     });
 
     dischargeSelect.addEventListener("change", async function () {
-      const v = this.value;
+      var v = this.value;
       if (!v) return;
-      const opt = this.options[this.selectedIndex];
-      const displayName = opt && opt.dataset.displayName ? opt.dataset.displayName : null;
-      const s = stations.find((st) => st.id === v);
+      get("noaa-select").value = "";
+      var opt = this.options[this.selectedIndex];
+      var displayName = opt && opt.dataset.displayName ? opt.dataset.displayName : null;
+      var s = stations.find(function (st) { return st.id === v; });
       loadDischargeStation(v, s ? s.lat : null, s ? s.lon : null, displayName || null);
-      const series = await fetchStationSeries(v);
+      var series = await fetchStationSeries(v);
       if (series.length > 0) drawDischargeChart(series);
+    });
+
+    var noaaSelect = get("noaa-select");
+    noaaList.forEach(function (s) {
+      var label = (s.name && s.name.trim()) ? s.name + " (" + (s.id || "") + ")" : (s.id || "NOAA");
+      var opt = document.createElement("option");
+      opt.value = s.id;
+      opt.textContent = label;
+      noaaSelect.appendChild(opt);
+    });
+    noaaSelect.addEventListener("change", function () {
+      var v = this.value;
+      if (!v) return;
+      get("discharge-select").value = "";
+      var s = noaaList.find(function (st) { return st.id === v; });
+      if (s) loadNoaaStation(s);
     });
   }
 
