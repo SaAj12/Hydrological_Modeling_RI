@@ -149,22 +149,17 @@
     return "https://waterdata.usgs.gov/monitoring-location/USGS-" + id8 + "/#dataTypeId=continuous-00060-0&period=P7D&showFieldMeasurements=true";
   }
 
-  function updateWaterLevelFigureForStation(noaaStationId) {
+  function updateWaterLevelFigureForStation() {
     var wrap = get("water-level-wrap");
     var img = get("water-level-figure");
     var noData = get("water-level-no-data");
     if (!wrap || !img || !noData) return;
     wrap.classList.remove("hidden");
-    if (!noaaStationId || noaaStationId !== "8454000") {
-      img.classList.add("hidden");
-      noData.classList.remove("hidden");
-      noData.textContent = noaaStationId ? "No water level data for this station." : "No water level data available.";
-      return;
-    }
     var base = "";
-    if (location.pathname && location.pathname !== "/" && location.pathname !== "/index.html") {
-      base = location.pathname.replace(/\/[^/]*$/, "/");
-      if (base && !base.endsWith("/")) base += "/";
+    var path = location.pathname || "";
+    if (path && path !== "/" && path !== "/index.html") {
+      var segs = path.split("/").filter(Boolean);
+      if (segs.length > 0) base = "/" + segs[0] + "/";
     }
     var src = base + "images/noaa/8454000_water_level_with_predictions.png";
     img.classList.add("hidden");
@@ -193,7 +188,7 @@
     get("vtec-figure-wrap").classList.add("hidden");
     get("water-level-wrap").classList.remove("hidden");
     destroyCharts();
-    updateWaterLevelFigureForStation(s && s.id ? s.id : null);
+    updateWaterLevelFigureForStation();
   }
 
   function loadDischargeStation(stationId, lat, lon, displayName) {

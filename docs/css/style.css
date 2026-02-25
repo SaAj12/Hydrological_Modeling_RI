@@ -167,18 +167,34 @@ body {
 }
 .vtec-wrap {
   margin-top: 0.25rem;
-  height: 220px;
+  min-height: 220px;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  align-items: stretch;
+}
+.vtec-wrap h3 {
+  flex-shrink: 0;
+  text-align: left;
 }
 .vtec-wrap .vtec-img {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
   display: block;
+  flex: 1;
+  min-height: 180px;
 }
 .vtec-wrap .vtec-img.hidden {
+  display: none;
+}
+.vtec-wrap .vtec-no-data {
+  flex: 1;
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.vtec-wrap .vtec-no-data.hidden {
   display: none;
 }
 .vtec-no-data {
