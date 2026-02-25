@@ -1,0 +1,116 @@
+{
+  "stations": [
+    {
+      "id": "8444069",
+      "name": "Castle Island, North of",
+      "lat": 42.340862,
+      "lon": -71.01234,
+      "state": "MA",
+      "url": "https://tidesandcurrents.noaa.gov/stationhome.html?id=8444069&name=Castle%20Island,%20North%20of&state=MA"
+    },
+    {
+      "id": "8447386",
+      "name": "Fall River",
+      "lat": 41.7043,
+      "lon": -71.1641,
+      "state": "MA",
+      "url": "https://tidesandcurrents.noaa.gov/stationhome.html?id=8447386&name=Fall%20River&state=MA"
+    },
+    {
+      "id": "8447387",
+      "name": "Borden Flats Light at Fall River",
+      "lat": 41.705,
+      "lon": -71.1733,
+      "state": "MA",
+      "url": "https://tidesandcurrents.noaa.gov/stationhome.html?id=8447387&name=Borden%20Flats%20Light%20at%20Fall%20River&state=MA"
+    },
+    {
+      "id": "8447412",
+      "name": "Fall River Visibility",
+      "lat": 41.695835,
+      "lon": -71.17983,
+      "state": "MA",
+      "url": "https://tidesandcurrents.noaa.gov/stationhome.html?id=8447412&name=Fall%20River%20Visibility&state=MA"
+    },
+    {
+      "id": "8447627",
+      "name": "New Bedford, Barrier Gate",
+      "lat": 41.624443,
+      "lon": -70.90544,
+      "state": "MA",
+      "url": "https://tidesandcurrents.noaa.gov/stationhome.html?id=8447627&name=New%20Bedford,%20Barrier%20Gate&state=MA"
+    },
+    {
+      "id": "8447636",
+      "name": "New Bedford Harbor",
+      "lat": 41.6212,
+      "lon": -70.9137,
+      "state": "MA",
+      "url": "https://tidesandcurrents.noaa.gov/stationhome.html?id=8447636&name=New%20Bedford%20Harbor&state=MA"
+    },
+    {
+      "id": "8452314",
+      "name": "Sandy Point Visibility, Prudence Island",
+      "lat": 41.605118,
+      "lon": -71.30424,
+      "state": "RI",
+      "url": "https://tidesandcurrents.noaa.gov/stationhome.html?id=8452314&name=Sandy%20Point%20Visibility,%20Prudence%20Island&state=RI"
+    },
+    {
+      "id": "8452660",
+      "name": "Newport",
+      "lat": 41.504333,
+      "lon": -71.32614,
+      "state": "RI",
+      "url": "https://tidesandcurrents.noaa.gov/stationhome.html?id=8452660&name=Newport&state=RI"
+    },
+    {
+      "id": "8452944",
+      "name": "Conimicut Light",
+      "lat": 41.7167,
+      "lon": -71.3433,
+      "state": "RI",
+      "url": "https://tidesandcurrents.noaa.gov/stationhome.html?id=8452944&name=Conimicut%20Light&state=RI"
+    },
+    {
+      "id": "8452951",
+      "name": "Potter Cove, Prudence Island",
+      "lat": 41.637165,
+      "lon": -71.33928,
+      "state": "RI",
+      "url": "https://tidesandcurrents.noaa.gov/stationhome.html?id=8452951&name=Potter%20Cove,%20Prudence%20Island&state=RI"
+    },
+    {
+      "id": "8453662",
+      "name": "Providence Visibility",
+      "lat": 41.785694,
+      "lon": -71.38308,
+      "state": "RI",
+      "url": "https://tidesandcurrents.noaa.gov/stationhome.html?id=8453662&name=Providence%20Visibility&state=RI"
+    },
+    {
+      "id": "8454000",
+      "name": "Providence",
+      "lat": 41.807167,
+      "lon": -71.400665,
+      "state": "RI",
+      "url": "https://tidesandcurrents.noaa.gov/stationhome.html?id=8454000&name=Providence&state=RI"
+    },
+    {
+      "id": "8454123",
+      "name": "Port of Davisville",
+      "lat": 41.61122,
+      "lon": -71.41031,
+      "state": "RI",
+      "url": "https://tidesandcurrents.noaa.gov/stationhome.html?id=8454123&name=Port%20of%20Davisville&state=RI"
+    },
+    {
+      "id": "8461490",
+      "name": "New London",
+      "lat": 41.371666,
+      "lon": -72.09556,
+      "state": "CT",
+      "url": "https://tidesandcurrents.noaa.gov/stationhome.html?id=8461490&name=New%20London&state=CT"
+    }
+  ]
+}

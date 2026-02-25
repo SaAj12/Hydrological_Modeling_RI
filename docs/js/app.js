@@ -4,8 +4,10 @@
   const API = window.API_BASE || "";
   let map = null;
   let dischargeLayer = null;
+  let noaaLayer = null;
   let chartDischarge = null;
   let dischargeData = null;
+  let noaaStations = [];
 
   /** Format station ID as 8-digit text (e.g. 1108000 -> "01108000") */
   function formatStationIdDisplay(id) {
@@ -26,7 +28,12 @@
     if (content) {
       get("point-title").textContent = content.name || "Station";
       const meta = options.meta;
-      get("point-meta").textContent = meta !== undefined ? meta : "";
+      const metaEl = get("point-meta");
+      if (meta !== undefined) {
+        metaEl.innerHTML = meta;
+      } else {
+        metaEl.textContent = "";
+      }
     }
   }
 
@@ -116,7 +123,6 @@
     const noData = get("vtec-no-data");
     if (!wrap || !img || !noData) return;
     const staid8 = formatStationIdDisplay(stationId);
-    // GitHub Pages: pathname is e.g. /Hydrological-Modeling/ or /Hydrological-Modeling/index.html
     let base = "";
     if (location.pathname && location.pathname !== "/" && location.pathname !== "/index.html") {
       base = location.pathname.replace(/\/[^/]*$/, "/");
@@ -162,7 +168,23 @@
     img.src = src;
   }
 
+  function loadNoaaStation(s) {
+    let meta = (s.lat != null && s.lon != null)
+      ? "Lat " + Number(s.lat).toFixed(4) + "°, Lon " + Number(s.lon).toFixed(4) + "° — NOAA tide/water level"
+      : "NOAA tide/water level station";
+    if (s.url) meta += ' <a href="' + s.url + '" target="_blank" rel="noopener">View on NOAA Tides & Currents</a>';
+    const label = (s.name && s.name.trim()) ? s.name + " (" + (s.id || "") + ")" : (s.id || "NOAA station");
+    showPanel({ name: label }, { meta: meta });
+    get("discharge-chart-wrap").classList.add("hidden");
+    get("vtec-figure-wrap").classList.add("hidden");
+    get("water-level-wrap").classList.add("hidden");
+    destroyCharts();
+  }
+
   function loadDischargeStation(stationId, lat, lon, displayName) {
+    get("discharge-chart-wrap").classList.remove("hidden");
+    get("vtec-figure-wrap").classList.remove("hidden");
+    get("water-level-wrap").classList.remove("hidden");
     const meta = (lat != null && lon != null)
       ? "Lat " + Number(lat).toFixed(4) + "°, Lon " + Number(lon).toFixed(4) + "°"
       : "Discharge station";
@@ -242,6 +264,25 @@
     }
   }
 
+  async function loadNoaaStations() {
+    if (noaaStations.length > 0) return noaaStations;
+    var dataUrl = "data/noaa_stations.json";
+    if (location.pathname && location.pathname !== "/" && location.pathname !== "/index.html") {
+      var base = location.pathname.replace(/\/[^/]*$/, "/");
+      dataUrl = base + (base.indexOf("data/") === -1 ? "data/noaa_stations.json" : "noaa_stations.json");
+    }
+    try {
+      var res = await fetch(dataUrl);
+      if (!res.ok) return [];
+      var data = await res.json();
+      noaaStations = data.stations || [];
+      return noaaStations;
+    } catch (e) {
+      console.warn("Failed to load NOAA stations:", e);
+      return [];
+    }
+  }
+
   async function fetchStationSeries(stationId) {
     if (dischargeData && dischargeData.series) {
       const s = dischargeData.series[stationId] || dischargeData.series[String(stationId)];
@@ -261,7 +302,7 @@
     return [];
   }
 
-  function initMap() {
+  async function initMap() {
     const center = [41.75, -71.5];
     map = L.map("map").setView(center, 8);
     L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}", {
@@ -270,6 +311,34 @@
     }).addTo(map);
 
     dischargeLayer = L.layerGroup().addTo(map);
+    noaaLayer = L.layerGroup().addTo(map);
+
+    const noaaList = await loadNoaaStations();
+    noaaList.forEach(function (s) {
+      if (s.lat == null || s.lon == null) return;
+      const label = (s.name && s.name.trim()) ? s.name + " (" + (s.id || "") + ")" : (s.id || "NOAA");
+      const marker = L.circleMarker([s.lat, s.lon], {
+        radius: 6,
+        fillColor: "#58a6ff",
+        color: "#388bfd",
+        weight: 1,
+        fillOpacity: 0.9,
+      });
+      marker.bindTooltip("NOAA: " + label, { permanent: false });
+      marker.on("click", function () { loadNoaaStation(s); });
+      noaaLayer.addLayer(marker);
+    });
+
+    var legend = L.control({ position: "bottomright" });
+    legend.onAdd = function () {
+      var div = L.DomUtil.create("div", "map-legend");
+      div.innerHTML =
+        "<strong>Legend</strong><br>" +
+        "<span class='legend-item'><span class='legend-swatch' style='background:#3fb950;border-color:#2ea043'></span> USGS discharge</span><br>" +
+        "<span class='legend-item'><span class='legend-swatch' style='background:#58a6ff;border-color:#388bfd'></span> NOAA tide/water level</span>";
+      return div;
+    };
+    legend.addTo(map);
 
     const dischargeSelect = get("discharge-select");
     const stations = dischargeData ? dischargeData.stations : [];
@@ -322,7 +391,7 @@
     if (dischargeData && dischargeData.stations && dischargeData.stations.length > 0) {
       document.getElementById("api-error-banner").classList.add("hidden");
     }
-    initMap();
+    await initMap();
   }
 
   if (document.readyState === "loading") {
