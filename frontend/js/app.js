@@ -123,11 +123,7 @@
     const noData = get("vtec-no-data");
     if (!wrap || !img || !noData) return;
     const staid8 = formatStationIdDisplay(stationId);
-    let base = "";
-    if (location.pathname && location.pathname !== "/" && location.pathname !== "/index.html") {
-      base = location.pathname.replace(/\/[^/]*$/, "/");
-      if (base && !base.endsWith("/")) base += "/";
-    }
+    const base = getBasePath();
     const src = base + "images/vtec/vtec_timeline_" + staid8 + ".png";
     img.classList.add("hidden");
     noData.classList.add("hidden");

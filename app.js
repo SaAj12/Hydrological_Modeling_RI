@@ -278,12 +278,10 @@
   }
 
   async function init() {
-    get("layer-watershed").addEventListener("change", function () {
-      toggleWatershedLayer(this.checked);
-    });
-    get("layer-dem").addEventListener("change", function () {
-      toggleDEMLayer(this.checked);
-    });
+    var watershedCb = get("layer-watershed");
+    var demCb = get("layer-dem");
+    if (watershedCb) watershedCb.addEventListener("change", function () { toggleWatershedLayer(this.checked); });
+    if (demCb) demCb.addEventListener("change", function () { toggleDEMLayer(this.checked); });
 
     dischargeData = await loadDischargeData();
     if (dischargeData && dischargeData.stations && dischargeData.stations.length > 0) {

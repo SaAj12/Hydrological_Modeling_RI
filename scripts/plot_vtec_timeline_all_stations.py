@@ -156,17 +156,25 @@ def main():
         print(f"No per-station CSVs in {args.input_dir} (expected vtec_events_<STAID>.csv)", file=sys.stderr)
         sys.exit(1)
 
+    output_dirs = [
+        os.path.join(PROJECT_ROOT, "docs", "images", "vtec"),
+        os.path.join(PROJECT_ROOT, "frontend", "images", "vtec"),
+    ]
     print("Warning types plotted:", ", ".join(ALLOWED_WARNING_NAMES))
     print("X-axis: 2010-01-01 to 2025-12-31")
     ok = 0
     for staid, csv_path in files:
-        out_path = os.path.join(output_dir, f"vtec_timeline_{staid}.png")
-        if plot_one(csv_path, out_path, staid):
-            print(f"  {staid}: {out_path}")
+        wrote = False
+        for out_dir in output_dirs:
+            out_path = os.path.join(out_dir, f"vtec_timeline_{staid}.png")
+            if plot_one(csv_path, out_path, staid):
+                wrote = True
+        if wrote:
+            print(f"  {staid}")
             ok += 1
         else:
             print(f"  {staid}: skip (no data or bad format)", file=sys.stderr)
-    print(f"Done: {ok}/{len(files)} figures in {output_dir}")
+    print(f"Done: {ok}/{len(files)} figures")
 
 
 if __name__ == "__main__":

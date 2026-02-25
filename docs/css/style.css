@@ -147,7 +147,7 @@ body {
   border: 1px solid #30363d;
   border-radius: 8px;
   padding: 0.5rem;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
 }
 .chart-wrap:last-child {
   margin-bottom: 0;
@@ -170,7 +170,7 @@ body {
 .vtec-wrap,
 #water-level-wrap,
 #precipitation-wrap {
-  margin-top: 1rem;
+  margin-top: 1.25rem;
   min-height: 220px;
   height: auto !important;
   display: flex !important;
