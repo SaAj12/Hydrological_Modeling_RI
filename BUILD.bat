@@ -41,12 +41,10 @@ if errorlevel 1 (
 )
 
 echo.
-echo Downloading NOAA water level and meteorological data...
-python scripts/download_noaa_water_level.py
-python scripts/download_noaa_meteorological.py
-if errorlevel 1 (
-  echo NOAA download step had errors.
-)
+echo Skipping NOAA download (often blocked with 403). Use existing noaa/*.csv files.
+rem Uncomment below to fetch fresh NOAA data when API is accessible:
+rem python scripts/download_noaa_water_level.py
+rem python scripts/download_noaa_meteorological.py
 
 echo.
 echo Plotting NOAA water level and meteorological...
@@ -56,6 +54,12 @@ if errorlevel 1 (
   echo NOAA plot step had errors. Ensure noaa/*.csv exist.
 )
 
+echo.
+echo Exporting water level, precipitation, meteorological, VTEC data...
+python scripts/export_water_level_data.py
+python scripts/export_precipitation_data.py
+python scripts/export_meteorological_data.py
+python scripts/export_vtec_data.py
 echo.
 echo Exporting storm events...
 python scripts/export_storms_data.py

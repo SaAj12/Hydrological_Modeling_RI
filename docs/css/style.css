@@ -167,37 +167,35 @@ body {
   gap: 0;
 }
 .chart-wrap {
-  background: #0d1117;
-  border: 1px solid #30363d;
+  background: #ffffff;
+  border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 0.5rem;
-  margin-bottom: 1.5rem;
+  padding: 0.75rem 1rem 1rem;
+  margin-bottom: 2rem;
+  position: relative;
+  height: 240px;
 }
 .chart-wrap:last-child {
   margin-bottom: 0;
 }
 .chart-wrap h3 {
-  margin: 0 0 0.35rem 0;
-  font-size: 0.9rem;
+  margin: 0 0 0.5rem 0;
+  font-size: 0.95rem;
   font-weight: 600;
-  color: #8b949e;
-}
-.chart-wrap {
-  position: relative;
-  height: 220px;
+  color: #333;
 }
 .chart-wrap canvas {
   width: 100% !important;
-  height: 220px !important;
+  height: 200px !important;
   display: block;
 }
 .vtec-wrap,
 #water-level-wrap,
 #meteorological-wrap,
 #precipitation-wrap {
-  margin-top: 1.25rem;
-  min-height: 220px;
-  height: auto !important;
+  margin-top: 0;
+  min-height: 240px;
+  height: 240px !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: stretch;
@@ -210,7 +208,14 @@ body {
   text-align: left;
   width: 100%;
   display: block;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+.vtec-wrap canvas,
+#water-level-wrap canvas,
+#meteorological-wrap canvas,
+#precipitation-wrap canvas {
+  height: 200px !important;
 }
 .vtec-wrap .vtec-img,
 #water-level-wrap .vtec-img,

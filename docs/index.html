@@ -36,35 +36,35 @@
         <div id="panel-content" class="content hidden">
           <h2 id="point-title">Station</h2>
           <p id="point-meta" class="meta"></p>
+          <div class="storm-controls">
+            <label>Storm events (RI/MA/CT 2010–2025):</label>
+            <select id="storm-select">
+              <option value="">— show all (with storm bars) —</option>
+            </select>
+          </div>
           <div class="charts">
             <div id="discharge-chart-wrap" class="chart-wrap">
-              <div class="storm-controls">
-                <label>Storm events (RI/MA/CT 2010–2025):</label>
-                <select id="storm-select">
-                  <option value="">— show all (with storm bars) —</option>
-                </select>
-              </div>
               <h3 id="discharge-chart-title">Discharge (cfs, Cubic feet per second)</h3>
               <canvas id="chart-discharge"></canvas>
             </div>
             <div id="vtec-figure-wrap" class="chart-wrap vtec-wrap hidden">
-              <h3>NWS watch / warning / advisory (VTEC)</h3>
-              <img id="vtec-figure" src="" alt="VTEC timeline" class="vtec-img" />
+              <h3 id="vtec-title">VTEC — Station —</h3>
+              <canvas id="chart-vtec"></canvas>
               <p id="vtec-no-data" class="vtec-no-data hidden">No VTEC data for this station.</p>
             </div>
             <div id="water-level-wrap" class="chart-wrap vtec-wrap hidden">
-              <h3>NOAA water level</h3>
-              <img id="water-level-figure" src="" alt="Water level time series" class="vtec-img" />
+              <h3 id="water-level-title">Water level (m MLLW) — Station —</h3>
+              <canvas id="chart-water-level"></canvas>
               <p id="water-level-no-data" class="vtec-no-data hidden">No water level data available.</p>
             </div>
             <div id="meteorological-wrap" class="chart-wrap vtec-wrap hidden">
-              <h3>NOAA water level (with predictions) & meteorological</h3>
-              <img id="meteorological-figure" src="" alt="Meteorological time series" class="vtec-img" />
+              <h3 id="meteorological-title">Water level & meteorological — Station —</h3>
+              <canvas id="chart-meteorological"></canvas>
               <p id="meteorological-no-data" class="vtec-no-data hidden">No meteorological data available.</p>
             </div>
             <div id="precipitation-wrap" class="chart-wrap vtec-wrap hidden">
-              <h3>Precipitation (GPM IMERG)</h3>
-              <img id="precipitation-figure" src="" alt="Precipitation time series" class="vtec-img" />
+              <h3 id="precipitation-title">Precipitation (mm/day) — Station —</h3>
+              <canvas id="chart-precipitation"></canvas>
               <p id="precipitation-no-data" class="vtec-no-data hidden">No precipitation data available.</p>
             </div>
           </div>

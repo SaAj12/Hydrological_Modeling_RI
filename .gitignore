@@ -3,6 +3,14 @@ gpm_imerg_region/
 *.nc
 *.nc4
 
+# NOAA raw CSVs and large JSON exports (exceed GitHub 100MB limit)
+noaa/*.csv
+!noaa/noaa_stations_in_domain.csv
+frontend/data/water_level_data.json
+frontend/data/meteorological_data.json
+docs/data/water_level_data.json
+docs/data/meteorological_data.json
+
 # Data (large; use SWAT_DATA_DIR or deploy bundle separately)
 backend/data/domain_*/
 *.zip
