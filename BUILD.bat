@@ -37,7 +37,14 @@ echo.
 echo Plotting NOAA precipitation...
 python scripts/plot_precipitation_noaa_stations.py
 if errorlevel 1 (
-  echo Precipitation plot failed. Ensure pr_extracted/ exists.
+  echo NOAA precipitation plot failed. Ensure pr_extracted/ exists.
+)
+
+echo.
+echo Plotting USGS precipitation...
+python scripts/plot_precipitation_usgs_stations.py
+if errorlevel 1 (
+  echo USGS precipitation plot failed. Ensure pr_extracted/ exists.
 )
 
 echo.

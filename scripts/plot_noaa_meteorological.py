@@ -18,8 +18,8 @@ PROJECT_ROOT = os.path.dirname(_SCRIPT_DIR)
 DEFAULT_INPUT_DIR = os.path.join(PROJECT_ROOT, "noaa")
 from chart_axis_constants import FIG_SIZE, apply_chart_xaxis
 
-# Products to plot (order: air_pressure, air_temperature, water_temperature, wind, humidity)
-PRODUCTS = ["air_pressure", "air_temperature", "water_temperature", "wind", "humidity"]
+# Products to plot: all 6 NOAA met parameters
+PRODUCTS = ["air_pressure", "air_temperature", "water_temperature", "wind", "humidity", "visibility"]
 PRODUCT_CONFIG = {
     "air_pressure": (
         ["Air Pressure", "air pressure", "Barometric Pressure", "v"],
@@ -45,6 +45,11 @@ PRODUCT_CONFIG = {
         ["Humidity", "humidity", "Relative Humidity", "v"],
         "%",
         "Humidity",
+    ),
+    "visibility": (
+        ["Visibility", "visibility", "v"],
+        "km",
+        "Visibility",
     ),
 }
 
