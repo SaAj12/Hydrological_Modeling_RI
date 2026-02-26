@@ -5,6 +5,7 @@
   let map = null;
   let dischargeLayer = null;
   let noaaLayer = null;
+  let sensorsLayer = null;
   let chartDischarge = null;
   let dischargeData = null;
   let noaaStations = [];
@@ -178,9 +179,9 @@
   }
 
   function updateWaterLevelFigureForStation(noaaId) {
-    var wrap = get("water-level-wrap");
-    var img = get("water-level-figure");
-    var noData = get("water-level-no-data");
+    const wrap = get("water-level-wrap");
+    const img = get("water-level-figure");
+    const noData = get("water-level-no-data");
     if (!wrap || !img || !noData) return;
     wrap.classList.remove("hidden");
     if (!noaaId) {
@@ -420,12 +421,7 @@
 
   async function loadNoaaStations() {
     if (noaaStations.length > 0) return noaaStations;
-    var base = "";
-    var path = location.pathname || "";
-    if (path && path !== "/" && path !== "/index.html") {
-      var segments = path.split("/").filter(Boolean);
-      if (segments.length > 0) base = "/" + segments[0] + "/";
-    }
+    var base = getBasePath();
     var dataUrl = base + "data/noaa_stations.json";
     try {
       var res = await fetch(dataUrl);
@@ -458,6 +454,20 @@
     return [];
   }
 
+  async function loadSensors() {
+    var base = getBasePath();
+    var dataUrl = base + "data/sensors_data.json";
+    try {
+      var res = await fetch(dataUrl);
+      if (!res.ok) return [];
+      var data = await res.json();
+      return data.sensors || [];
+    } catch (e) {
+      console.warn("Failed to load sensors:", e);
+      return [];
+    }
+  }
+
   async function initMap() {
     const center = [41.75, -71.5];
     map = L.map("map").setView(center, 8);
@@ -468,6 +478,7 @@
 
     dischargeLayer = L.layerGroup().addTo(map);
     noaaLayer = L.layerGroup().addTo(map);
+    sensorsLayer = L.layerGroup().addTo(map);
 
     const noaaList = await loadNoaaStations();
     noaaList.forEach(function (s) {
@@ -489,13 +500,28 @@
       noaaLayer.addLayer(marker);
     });
 
+    var sensorsList = await loadSensors();
+    sensorsList.forEach(function (s) {
+      if (s.lat == null || s.lon == null) return;
+      var marker = L.circleMarker([s.lat, s.lon], {
+        radius: 6,
+        fillColor: "#f0883e",
+        color: "#c76b22",
+        weight: 1,
+        fillOpacity: 0.9,
+      });
+      marker.bindTooltip("Sensor: " + (s.name || ""), { permanent: false });
+      sensorsLayer.addLayer(marker);
+    });
+
     var legend = L.control({ position: "bottomright" });
     legend.onAdd = function () {
       var div = L.DomUtil.create("div", "map-legend");
       div.innerHTML =
         "<strong>Legend</strong><br>" +
         "<span class='legend-item'><span class='legend-swatch' style='background:#3fb950;border-color:#2ea043'></span> USGS discharge</span><br>" +
-        "<span class='legend-item'><span class='legend-swatch' style='background:#58a6ff;border-color:#388bfd'></span> NOAA tide/water level</span>";
+        "<span class='legend-item'><span class='legend-swatch' style='background:#58a6ff;border-color:#388bfd'></span> NOAA tide/water level</span><br>" +
+        "<span class='legend-item'><span class='legend-swatch' style='background:#f0883e;border-color:#c76b22'></span> Sensors</span>";
       return div;
     };
     legend.addTo(map);

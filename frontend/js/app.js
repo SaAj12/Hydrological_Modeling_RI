@@ -421,7 +421,7 @@
 
   async function loadNoaaStations() {
     if (noaaStations.length > 0) return noaaStations;
-    var base = getDataBase();
+    var base = getBasePath();
     var dataUrl = base + "data/noaa_stations.json";
     try {
       var res = await fetch(dataUrl);
@@ -454,17 +454,8 @@
     return [];
   }
 
-  function getDataBase() {
-    var path = location.pathname || "";
-    if (path && path !== "/" && path !== "/index.html") {
-      var segments = path.split("/").filter(Boolean);
-      if (segments.length > 0) return "/" + segments[0] + "/";
-    }
-    return "";
-  }
-
   async function loadSensors() {
-    var base = getDataBase();
+    var base = getBasePath();
     var dataUrl = base + "data/sensors_data.json";
     try {
       var res = await fetch(dataUrl);
@@ -509,20 +500,17 @@
       noaaLayer.addLayer(marker);
     });
 
-    var sensorColors = { fluvial: { fill: "#f0883e", stroke: "#c76b22" }, tide: { fill: "#a371f7", stroke: "#8250df" }, overland: { fill: "#d29922", stroke: "#9e6a03" } };
     var sensorsList = await loadSensors();
     sensorsList.forEach(function (s) {
       if (s.lat == null || s.lon == null) return;
-      var c = sensorColors[s.sensorType] || { fill: "#8b949e", stroke: "#6e7681" };
       var marker = L.circleMarker([s.lat, s.lon], {
         radius: 6,
-        fillColor: c.fill,
-        color: c.stroke,
+        fillColor: "#f0883e",
+        color: "#c76b22",
         weight: 1,
         fillOpacity: 0.9,
       });
-      var typeLabel = (s.sensorType || "sensor").charAt(0).toUpperCase() + (s.sensorType || "sensor").slice(1);
-      marker.bindTooltip(typeLabel + ": " + (s.name || ""), { permanent: false });
+      marker.bindTooltip("Sensor: " + (s.name || ""), { permanent: false });
       sensorsLayer.addLayer(marker);
     });
 
@@ -533,9 +521,7 @@
         "<strong>Legend</strong><br>" +
         "<span class='legend-item'><span class='legend-swatch' style='background:#3fb950;border-color:#2ea043'></span> USGS discharge</span><br>" +
         "<span class='legend-item'><span class='legend-swatch' style='background:#58a6ff;border-color:#388bfd'></span> NOAA tide/water level</span><br>" +
-        "<span class='legend-item'><span class='legend-swatch' style='background:#f0883e;border-color:#c76b22'></span> Fluvial sensor</span><br>" +
-        "<span class='legend-item'><span class='legend-swatch' style='background:#a371f7;border-color:#8250df'></span> Tide sensor</span><br>" +
-        "<span class='legend-item'><span class='legend-swatch' style='background:#d29922;border-color:#9e6a03'></span> Overland sensor</span>";
+        "<span class='legend-item'><span class='legend-swatch' style='background:#f0883e;border-color:#c76b22'></span> Sensors</span>";
       return div;
     };
     legend.addTo(map);
