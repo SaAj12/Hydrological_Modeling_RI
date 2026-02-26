@@ -1,0 +1,9 @@
+| Year | Storm            | Type                            | RI  | MA  | Notes           |
+| ---- | ---------------- | ------------------------------- | --- | --- | --------------- |
+| 2010 | March Nor’easter | Extratropical                   | ✔   | ✔   | Severe flooding |
+| 2011 | Irene            | Hurricane/Post-tropical         | ✔   | ✔   | Major flooding  |
+| 2012 | Sandy            | Hurricane → Extratropical       | ✔   | ✔   | Surge & wind    |
+| 2017 | Jose             | Tropical cyclone (offshore)     | (✔) | (✔) | Indirect        |
+| 2017 | Philippe         | Extratropical (tropical origin) | (✔) | (✔) | Indirect        |
+| 2019 | Melissa          | Subtropical → Extratropical     | (✔) | (✔) | Indirect        |
+| 2023 | Lee              | Hurricane (offshore)            | (✔) | (✔) | Marine impacts  |

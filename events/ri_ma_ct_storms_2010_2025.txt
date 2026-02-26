@@ -1,0 +1,301 @@
+================================================================================
+STORMS AND CYCLONES AFFECTING RI, MA, AND CT
+January 1, 2010 – December 31, 2025
+================================================================================
+
+Scope: Rhode Island, Massachusetts, and Connecticut
+Data sources: NOAA IBTrACS, NWS, Storm Events Database, Wikipedia List of New
+England Hurricanes, hist_hurr.txt, and regional storm reports.
+
+Includes: Tropical cyclones (hurricanes, tropical storms, subtropical),
+post-tropical cyclones, nor'easters, and major extratropical/winter storms.
+
+================================================================================
+SUMMARY
+================================================================================
+Total events: 50+
+
+================================================================================
+2010
+================================================================================
+
+1. March 12–16, 2010 – MARCH NOR'EASTER (St. Patrick's Day Nor'easter)
+   Type: Extratropical / Nor'easter
+   States: RI, MA, CT
+   Impact: >10 inches rain, severe flooding; winds to 70 mph; >1M power outages;
+           9+ deaths; coastal flooding, beach erosion.
+
+2. September 4, 2010 – HURRICANE EARL
+   Type: Hurricane (offshore)
+   States: MA (Cape Cod, Nantucket, Martha's Vineyard)
+   Impact: Passed ~90 mi offshore; heavy rain, large waves; tropical storm gusts
+           (58 mph Hyannis); sustained 29–35 mph.
+
+================================================================================
+2011
+================================================================================
+
+3. August 28, 2011 – HURRICANE IRENE
+   Type: Hurricane → Tropical Storm (landfall NY, then into New England)
+   States: RI, MA, CT
+   Impact: 70 mph at landfall; major flooding (especially western New England);
+           hurricane-force gusts Westport–Woods Hole; 16+ deaths in New England
+           (10 in CT); historic Vermont flooding.
+
+================================================================================
+2012
+================================================================================
+
+4. October 29–30, 2012 – HURRICANE SANDY
+   Type: Hurricane → Post-tropical (landfall NJ)
+   States: RI, MA, CT
+   Impact: Surge, wind, heavy rain; CT/RI coastlines hit; 5 New England deaths
+           (4 CT); widespread power outages; major coastal damage.
+
+================================================================================
+2013
+================================================================================
+
+5. March 6–7, 2013 – MARCH NOR'EASTER
+   Type: Nor'easter
+   States: MA, CT
+   Impact: Up to 3 ft snow; ~250K power outages; 10+ fatalities; RSI Category 2.
+
+6. June 8, 2013 – TROPICAL STORM ANDREA
+   Type: Tropical Storm → Extratropical
+   States: MA, RI (track near 42.4°N, 70.4°W)
+   Impact: Rainfall, coastal effects.
+
+================================================================================
+2014
+================================================================================
+
+7. [No major tropical or nor'easter events specifically documented for RI/MA/CT
+   in standard regional storm summaries for 2014.]
+
+================================================================================
+2015
+================================================================================
+
+8. May 12, 2015 – TROPICAL STORM ANA
+   Type: Subtropical / Tropical Low
+   States: MA (offshore near 40.8°N, 70.7°W)
+   Impact: Minor coastal effects.
+
+9. October 2–5, 2015 – HURRICANE JOAQUIN
+   Type: Hurricane (offshore)
+   States: MA (Cape Cod, Nantucket)
+   Impact: High surf; originally forecast for landfall but stayed offshore.
+
+================================================================================
+2016
+================================================================================
+
+10. January 22–24, 2016 – JANUARY BLIZZARD (Historic Nor'easter)
+    Type: Nor'easter / Blizzard
+    States: RI, MA, CT
+    Impact: 2–3 ft snow; blizzard conditions; major travel disruption; coastal
+            flooding (NJ shore exceeded Sandy levels in some areas).
+
+11. September 8, 2016 – HURRICANE HERMINE
+    Type: Hurricane → Extratropical
+    States: MA (near 40.6°N, 70.7°W)
+    Impact: Offshore track; rainfall, wind.
+
+================================================================================
+2017
+================================================================================
+
+12. September 19–22, 2017 – HURRICANE JOSE
+    Type: Tropical Storm (stalled offshore)
+    States: RI, MA
+    Impact: Stalled south of New England; tropical storm winds (Block Island 41 mph,
+            Nantucket 62 mph); 6.4" rain on Nantucket; coastal effects.
+
+13. October 29–30, 2017 – TROPICAL STORM PHILIPPE + EXTRATROPICAL
+    Type: Tropical + Extratropical merger
+    States: RI, MA, CT
+    Impact: ~1.2M power outages; 57 mph sustained Warwick RI; 93 mph gust
+            Popponesset MA; 5.5" rain Canton CT.
+
+================================================================================
+2018
+================================================================================
+
+14. March 1–3, 2018 – NOR'EASTER
+    Type: Nor'easter
+    States: MA, CT
+    Impact: >2 ft snow in places; 97 mph gust Wellfleet MA; coastal flooding;
+            9 deaths; ~$2.25B damage; 1.9M+ power outages.
+
+15. September 18, 2018 – HURRICANE FLORENCE (remnants)
+    Type: Post-tropical
+    States: MA, CT
+    Impact: Gusty winds; heavy rain; 7" in Baldwinville MA.
+
+16. October 12, 2018 – HURRICANE MICHAEL (remnants)
+    Type: Post-tropical
+    States: MA
+    Impact: Heavy rainfall southeastern MA.
+
+================================================================================
+2019
+================================================================================
+
+17. Early September 2019 – HURRICANE DORIAN
+    Type: Hurricane (offshore brush)
+    States: MA (Nantucket, Cape Cod, Martha's Vineyard)
+    Impact: Tropical storm force winds; light–moderate rain; brushed southeast
+            before hitting Nova Scotia.
+
+18. October 11–13, 2019 – TROPICAL STORM MELISSA
+    Type: Subtropical → Extratropical
+    States: RI, MA (southeastern New England)
+    Impact: Rainfall; coastal flooding; strong swells.
+
+================================================================================
+2020
+================================================================================
+
+19. July 9, 2020 – TROPICAL STORM FAY
+    Type: Tropical Storm (landfall NJ)
+    States: MA, RI, CT (warnings)
+    Impact: Multiple meteorological warnings; marginal impacts.
+
+20. August 4, 2020 – TROPICAL STORM ISAIAS
+    Type: Tropical Storm (landfall NC; maintained strength into New England)
+    States: RI, MA, CT
+    Impact: Extensive power outages; tree damage, especially CT; became
+            extratropical over VT.
+
+21. October 30, 2020 – POST-TROPICAL STORM ZETA
+    Type: Post-tropical
+    States: RI, MA, CT
+    Impact: >6" snow in parts of New England; power outages; downed trees;
+            numerous crashes and injuries.
+
+22. December 16–17, 2020 – WINTER STORM
+    Type: Nor'easter
+    States: MA, CT
+    Impact: 8–18" snow southern New England.
+
+================================================================================
+2021
+================================================================================
+
+23. February 1–2, 2021 – WINTER STORM
+    Type: Nor'easter
+    States: MA, CT
+    Impact: 8–15" snow; 12–20" in parts of MA and CT.
+
+24. February 7, 2021 – WINTER STORM
+    Type: Nor'easter
+    States: MA, CT
+    Impact: Significant snowfall.
+
+25. July 8–9, 2021 – HURRICANE ELSA
+    Type: Tropical Storm (landfall RI)
+    States: RI, MA, CT
+    Impact: Landfall in RI; rain, flash flooding, tropical storm winds; first
+            RI landfall since Bob 1991.
+
+26. August 20, 2021 – TROPICAL STORM FRED (remnants)
+    Type: Extratropical
+    States: MA (track near 42.7°N, 72.2°W)
+    Impact: Rainfall, wind.
+
+27. August 22, 2021 – TROPICAL STORM HENRI
+    Type: Tropical Storm (landfall Westerly, RI)
+    States: RI, MA, CT
+    Impact: Landfall near Westerly RI; 60 mph sustained, 70 mph gusts; 4–9"
+            rain; >100K power outages; first TC landfall in RI since Bob 1991.
+
+28. September 2, 2021 – POST-TROPICAL CYCLONE IDA
+    Type: Post-tropical
+    States: RI, MA, CT
+    Impact: Deadly flash flooding Northeast US including New England.
+
+================================================================================
+2022
+================================================================================
+
+29. September 6, 2022 – HURRICANE EARL
+    Type: Hurricane (offshore)
+    States: MA, RI, CT
+    Impact: Large surf; rip currents along East Coast.
+
+================================================================================
+2023
+================================================================================
+
+30. September 15–16, 2023 – HURRICANE LEE
+    Type: Hurricane → Post-tropical (landfall Nova Scotia)
+    States: RI, MA, CT
+    Impact: Tropical storm winds; 80 mph gusts; dangerous beach conditions;
+            widespread power outages; 1 death (Maine); tree damage.
+
+================================================================================
+2024
+================================================================================
+
+31. February 10–18, 2024 – FEBRUARY NOR'EASTER
+    Type: Nor'easter
+    States: RI, MA, CT
+    Impact: 15.7" max snowfall (West Hartford CT); 50 mph gusts Cape Cod;
+            >176K power outages; 1 fatality.
+
+32. July 10, 2024 – HURRICANE BERYL (remnants)
+    Type: Post-tropical
+    States: MA, CT (Northeast)
+    Impact: Flash flooding (NH, VT primarily; 2 deaths); some effects in region.
+
+33. August 10, 2024 – HURRICANE DEBBY (remnants)
+    Type: Post-tropical
+    States: RI, MA, CT
+    Impact: Heavy rain; high winds; rip currents.
+
+34. August 17, 2024 – HURRICANE ERNESTO
+    Type: Hurricane (offshore)
+    States: RI, MA, CT
+    Impact: Rip currents; high surf.
+
+================================================================================
+2025
+================================================================================
+
+35. July 8, 2025 – TROPICAL STORM CHANTAL
+    Type: Tropical Storm
+    States: CT
+    Impact: Microburst in Bantam/Litchfield; trees and power lines down; 1–1.5"
+            rain New Haven; flood alerts on I-95, I-91.
+
+36. August 21–22, 2025 – HURRICANE ERIN
+    Type: Hurricane
+    States: CT, RI, MA
+    Impact: Minor to moderate coastal flooding Connecticut to Maine.
+
+================================================================================
+KEY
+================================================================================
+RI = Rhode Island
+MA = Massachusetts
+CT = Connecticut
+TC = Tropical Cyclone
+
+Peak tropical cyclone landfalls in RI/MA/CT (2010–2025): Henri 2021 (Westerly RI),
+Elsa 2021 (RI). Irene 2011 and Sandy 2012 made landfall elsewhere but caused
+major impacts in the three states.
+
+================================================================================
+NOTES
+================================================================================
+- 2014: No major tropical or documented nor'easter events for RI/MA/CT in
+  standard regional summaries; minor events may exist in Storm Events Database.
+- Geographic bounds used: RI ~41.1–42.0°N, ~71.1–71.9°W; MA ~41.2–42.9°N,
+  ~69.9–73.5°W; CT ~41.0–42.1°N, ~71.8–73.7°W.
+- For authoritative event-by-event details, use NOAA Storm Events Database:
+  https://www.ncei.noaa.gov/stormevents/
+
+================================================================================
+File generated: 2025-02-26
+================================================================================

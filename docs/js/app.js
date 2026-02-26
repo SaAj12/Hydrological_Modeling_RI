@@ -174,6 +174,7 @@
     return "";
   }
 
+  /** Show water level plot for the selected NOAA station only. Uses images/noaa/{id}_water_level_with_predictions.png */
   function updateWaterLevelFigureForStation(noaaId) {
     var wrap = get("water-level-wrap");
     var img = get("water-level-figure");
@@ -181,20 +182,29 @@
     if (!wrap || !img || !noData) return;
     wrap.classList.remove("hidden");
     var base = getBasePath();
-    var id = noaaId || "8454000";
-    var src = base + "images/noaa/" + id + "_water_level_with_predictions.png";
+    img.src = "";
     img.classList.add("hidden");
+    if (!noaaId) {
+      noData.classList.remove("hidden");
+      noData.textContent = "No water level data available for this station.";
+      return;
+    }
+    var idStr = String(noaaId);
     noData.classList.add("hidden");
     img.onerror = function () {
-      img.src = base + "images/noaa/8454000_water_level_with_predictions.png";
+      img.classList.add("hidden");
+      img.removeAttribute("src");
+      noData.classList.remove("hidden");
+      noData.textContent = "No water level data available for this station.";
     };
     img.onload = function () {
       img.classList.remove("hidden");
       noData.classList.add("hidden");
     };
-    img.src = src;
+    img.src = base + "images/noaa/" + idStr + "_water_level_with_predictions.png";
   }
 
+  /** Show precipitation for the selected NOAA station only. Uses images/noaa/precipitation_{id}.png */
   function updatePrecipitationFigure(noaaId) {
     var wrap = get("precipitation-wrap");
     var img = get("precipitation-figure");
@@ -202,11 +212,18 @@
     if (!wrap || !img || !noData) return;
     wrap.classList.remove("hidden");
     var base = getBasePath();
-    var src = base + "images/noaa/precipitation_" + (noaaId || "") + ".png";
+    img.src = "";
     img.classList.add("hidden");
+    if (!noaaId) {
+      noData.classList.remove("hidden");
+      noData.textContent = "No precipitation data available.";
+      return;
+    }
+    var src = base + "images/noaa/precipitation_" + noaaId + ".png";
     noData.classList.add("hidden");
     img.onerror = function () {
       img.classList.add("hidden");
+      img.removeAttribute("src");
       noData.classList.remove("hidden");
       noData.textContent = "No precipitation data available.";
     };

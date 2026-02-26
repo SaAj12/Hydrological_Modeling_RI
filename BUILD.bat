@@ -57,6 +57,13 @@ if errorlevel 1 (
 )
 
 echo.
+echo Exporting storm events...
+python scripts/export_storms_data.py
+if errorlevel 1 (
+  echo Storms export failed. Ensure events/hist_hurr_2010_2025_merged.txt exists.
+)
+
+echo.
 echo Preparing docs for GitHub Pages...
 python scripts/prepare_gh_pages.py
 if errorlevel 1 (

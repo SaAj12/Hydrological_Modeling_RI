@@ -1,0 +1,14 @@
+Station Name	Latitude	Longitude	Sensor Type
+West River bridge at Wanskuck Mill, Providence, RI	41.8548	-71.4295	fluvial
+Matunuck Marina, Wakefield, RI	41.3856	-71.5251	tide
+URI Sailing Center, Wakefield, RI	41.427	-71.497	tide
+Geochem Building, Brown University, Providence, RI	41.8256	-71.3991	overland
+Manton Ave., Woonasquatucket River, Providence, RI	41.8172	-71.4435	fluvial
+H dock, Galilee Harbor, Narragansett, RI	41.3778	-71.5127	tide
+Fox Point Upstream, Providence, RI	41.8168	-71.4015	tide
+Fox Point Downstream, Providence, RI	41.8158	-71.4005	tide
+Delaine St. bridge, Woonasquatucket River, Providence, RI	41.8193	-71.4422	fluvial
+Pleasant Valley Parkway at Academy, Providence, RI	41.8366	-71.4443	fluvial
+Charles St. bridge, West River, Providence, RI	41.8442	-71.4186	fluvial
+UU dock, Galilee Harbor, Narragansett, RI	41.3835	-71.5084	tide
+Valley Rd and Amherst Rd, Providence, RI	41.8232	-71.4398	overland

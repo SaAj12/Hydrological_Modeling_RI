@@ -1,0 +1,13 @@
+NOAA Water Level Stations (6 stations)
+======================================
+
+Only the following 6 NOAA stations have water level data on the NOAA Tides & Currents website:
+
+  8447386  https://tidesandcurrents.noaa.gov/waterlevels.html?id=8447386  (Fall River, MA)
+  8447636  https://tidesandcurrents.noaa.gov/waterlevels.html?id=8447636  (New Bedford Harbor, MA)
+  8452660  https://tidesandcurrents.noaa.gov/waterlevels.html?id=8452660  (Newport, RI)
+  8452944  https://tidesandcurrents.noaa.gov/waterlevels.html?id=8452944  (Conimicut Light, RI)
+  8454000  https://tidesandcurrents.noaa.gov/waterlevels.html?id=8454000  (Providence, RI)
+  8461490  https://tidesandcurrents.noaa.gov/waterlevels.html?id=8461490  (New London, CT)
+
+Other stations in noaa_stations_in_domain.csv do not have water level data on the NOAA website.
