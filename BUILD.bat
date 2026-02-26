@@ -55,11 +55,11 @@ if errorlevel 1 (
 )
 
 echo.
-echo Exporting water level, precipitation, meteorological, VTEC data...
-python scripts/export_water_level_data.py
-python scripts/export_precipitation_data.py
-python scripts/export_meteorological_data.py
-python scripts/export_vtec_data.py
+echo Skipping water level, precipitation, meteorological, VTEC JSON exports (using PNG plots instead).
+rem python scripts/export_water_level_data.py
+rem python scripts/export_precipitation_data.py
+rem python scripts/export_meteorological_data.py
+rem python scripts/export_vtec_data.py
 echo.
 echo Exporting storm events...
 python scripts/export_storms_data.py

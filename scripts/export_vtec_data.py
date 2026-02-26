@@ -71,6 +71,11 @@ def main():
             expired = r["expired_dt"].strftime("%Y-%m-%d %H:%M") if hasattr(r["expired_dt"], "strftime") else str(r["expired"])[:16]
             arr.append({"warning_name": r["warning_name"], "issued": issued, "expired": expired})
         series[staid] = arr
+        # USGS stations: also key by unpadded id (e.g. 1108000) so discharge_data.json ids match
+        if len(staid) == 8 and staid.isdigit() and staid.startswith("0"):
+            unpadded = str(int(staid))
+            if unpadded not in series:
+                series[unpadded] = arr
 
     out = {"series": series, "warning_order": ALLOWED}
     OUTPUT_FRONTEND.parent.mkdir(parents=True, exist_ok=True)

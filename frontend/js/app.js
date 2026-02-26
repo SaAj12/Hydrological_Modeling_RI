@@ -6,15 +6,7 @@
   let dischargeLayer = null;
   let noaaLayer = null;
   let chartDischarge = null;
-  let chartWaterLevel = null;
-  let chartPrecipitation = null;
-  let chartMeteorological = null;
-  let chartVtec = null;
   let dischargeData = null;
-  let waterLevelData = { series: {} };
-  let precipitationData = { series: {} };
-  let meteorologicalData = { series: {} };
-  let vtecData = { series: {}, warning_order: [] };
   let noaaStations = [];
   let stormsData = { storms: [] };
 
@@ -52,10 +44,7 @@
   }
 
   function destroyCharts() {
-    [chartDischarge, chartWaterLevel, chartPrecipitation, chartMeteorological, chartVtec].forEach(function (c) {
-      if (c) { c.destroy(); }
-    });
-    chartDischarge = chartWaterLevel = chartPrecipitation = chartMeteorological = chartVtec = null;
+    if (chartDischarge) { chartDischarge.destroy(); chartDischarge = null; }
   }
 
   /* Chart rules: white bg, x 2010–2025, year labels 2yr, station ID in title, same size, y-axis aligned */
@@ -199,68 +188,37 @@
     return idDisplay || "—";
   }
 
-  /** VTEC image uses raw id for NOAA (7-digit, e.g. 8444069) and padded for USGS (8-digit, e.g. 01108000) */
+  /** VTEC PNG uses raw id for NOAA (7-digit) and padded for USGS (8-digit) */
   function vtecImageId(stationId) {
     const s = String(stationId).trim();
-    if (/^\d{7}$/.test(s) && parseInt(s, 10) >= 8000000) return s;  // NOAA tide station ids
+    if (/^\d{7}$/.test(s) && parseInt(s, 10) >= 8000000) return s;
     return formatStationIdDisplay(stationId);
   }
 
   function updateVtecFigure(stationId) {
     const wrap = get("vtec-figure-wrap");
-    const canvas = get("chart-vtec");
+    const img = get("vtec-figure");
     const noData = get("vtec-no-data");
-    if (!wrap || !canvas || !noData) return;
+    if (!wrap || !img || !noData) return;
     wrap.classList.remove("hidden");
-    const idForVtec = vtecImageId(stationId);
-    const events = (vtecData.series && (vtecData.series[idForVtec] || vtecData.series[stationId])) || [];
-    if (events.length === 0) {
-      if (chartVtec) { chartVtec.destroy(); chartVtec = null; }
+    if (!stationId) {
+      img.removeAttribute("src");
+      img.classList.add("hidden");
       noData.classList.remove("hidden");
       return;
     }
-    noData.classList.add("hidden");
+    const idForVtec = vtecImageId(stationId);
+    const base = getBasePath();
+    img.onload = function () { img.classList.remove("hidden"); noData.classList.add("hidden"); };
+    img.onerror = function () {
+      img.removeAttribute("src");
+      img.classList.add("hidden");
+      noData.classList.remove("hidden");
+    };
+    img.classList.add("hidden");
+    img.src = base + "images/vtec/vtec_timeline_" + idForVtec + ".png";
     var vtecTitleEl = get("vtec-title");
     if (vtecTitleEl) vtecTitleEl.textContent = "VTEC — Station " + idForVtec;
-    const order = vtecData.warning_order || [];
-    const nameToY = {};
-    order.forEach(function (n, i) { nameToY[n] = i; });
-    const datasets = [{
-      label: "VTEC",
-      data: events.map(function (e) {
-        return { x: [e.issued, e.expired], y: nameToY[e.warning_name] != null ? nameToY[e.warning_name] : 0 };
-      }),
-      type: "bar",
-      indexAxis: "y",
-      backgroundColor: "rgba(70, 130, 180, 0.8)",
-      borderColor: "navy",
-      barThickness: 12,
-    }];
-    const yLabels = order.length ? order : ["Warning"];
-    var opts = Object.assign({}, chartOptions, {
-      indexAxis: "y",
-      plugins: Object.assign({}, chartOptions.plugins, {
-        legend: { display: false },
-        annotation: { annotations: buildStormAnnotations(stormsData.storms || [], yLabels.length - 0.5, -0.5) },
-      }),
-      scales: {
-        x: {
-          type: "time",
-          min: "2010-01-01",
-          max: "2025-12-31",
-          grid: { color: "#e0e0e0" },
-          ticks: { color: "#333", maxTicksLimit: 10 },
-          time: { unit: "year", stepSize: 2, displayFormats: { year: "yyyy" } },
-        },
-        y: { min: -0.5, max: yLabels.length - 0.5, minWidth: 48, grid: { color: "#e0e0e0" }, ticks: { callback: function (_, i) { return yLabels[i] || ""; }, color: "#333", maxRotation: 0 } },
-      },
-    });
-    if (chartVtec) chartVtec.destroy();
-    chartVtec = new Chart(canvas.getContext("2d"), {
-      type: "bar",
-      data: { datasets: datasets },
-      options: opts,
-    });
   }
 
   function usgsStationUrl(stationId) {
@@ -280,143 +238,77 @@
 
   function updateWaterLevelFigureForStation(noaaId) {
     var wrap = get("water-level-wrap");
-    var canvas = get("chart-water-level");
+    var img = get("water-level-figure");
     var noData = get("water-level-no-data");
-    if (!wrap || !canvas || !noData) return;
+    if (!wrap || !img || !noData) return;
     wrap.classList.remove("hidden");
     if (!noaaId) {
-      if (chartWaterLevel) { chartWaterLevel.destroy(); chartWaterLevel = null; }
+      img.removeAttribute("src");
+      img.classList.add("hidden");
       noData.classList.remove("hidden");
       return;
     }
-    var sta = waterLevelData.series[String(noaaId)];
-    if (!sta || (!sta.verified.length && !sta.preliminary.length && !sta.predictions.length && !sta.residual.length)) {
-      if (chartWaterLevel) { chartWaterLevel.destroy(); chartWaterLevel = null; }
+    var base = getBasePath();
+    img.onload = function () { img.classList.remove("hidden"); noData.classList.add("hidden"); };
+    img.onerror = function () {
+      img.removeAttribute("src");
+      img.classList.add("hidden");
       noData.classList.remove("hidden");
-      return;
-    }
-    noData.classList.add("hidden");
-    var datasets = [];
-    if (sta.verified && sta.verified.length) {
-      datasets.push({ label: "Verified", data: sta.verified.map(function (d) { return { x: d.date, y: d.value }; }), borderColor: "#4682b4", backgroundColor: "transparent", fill: false, tension: 0.1 });
-    }
-    if (sta.preliminary && sta.preliminary.length) {
-      datasets.push({ label: "Preliminary", data: sta.preliminary.map(function (d) { return { x: d.date, y: d.value }; }), borderColor: "orange", backgroundColor: "transparent", fill: false, tension: 0.1 });
-    }
-    if (sta.predictions && sta.predictions.length) {
-      datasets.push({ label: "Predictions", data: sta.predictions.map(function (d) { return { x: d.date, y: d.value }; }), borderColor: "green", backgroundColor: "transparent", fill: false, tension: 0.1 });
-    }
-    if (sta.residual && sta.residual.length) {
-      datasets.push({ label: "Obs − Pred", data: sta.residual.map(function (d) { return { x: d.date, y: d.value }; }), borderColor: "crimson", backgroundColor: "transparent", fill: false, tension: 0.1 });
-    }
-    var yMax = 0;
-    datasets.forEach(function (ds) { ds.data.forEach(function (p) { if (p.y > yMax) yMax = p.y; }); });
-    if (yMax <= 0) yMax = 1;
+    };
+    img.classList.add("hidden");
+    img.src = base + "images/noaa/" + noaaId + "_water_level_with_predictions.png";
     var titleEl = get("water-level-title");
     if (titleEl) titleEl.textContent = "Water level (m MLLW) — Station " + noaaId;
-    var opts = Object.assign({}, chartOptions, {
-      plugins: Object.assign({}, chartOptions.plugins, {
-        legend: { display: true, position: "top", labels: { color: "#333", boxWidth: 12 } },
-        annotation: { annotations: buildStormAnnotations(stormsData.storms || [], yMax * 1.05, yMax * 0.88) },
-      }),
-    });
-    if (chartWaterLevel) chartWaterLevel.destroy();
-    chartWaterLevel = new Chart(canvas.getContext("2d"), {
-      type: "line",
-      data: { datasets: datasets },
-      options: opts,
-    });
   }
 
   function updateMeteorologicalFigureForStation(noaaId) {
     var wrap = get("meteorological-wrap");
-    var canvas = get("chart-meteorological");
+    var img = get("meteorological-figure");
     var noData = get("meteorological-no-data");
-    if (!wrap || !canvas || !noData) return;
+    if (!wrap || !img || !noData) return;
     wrap.classList.remove("hidden");
     if (!noaaId) {
-      if (chartMeteorological) { chartMeteorological.destroy(); chartMeteorological = null; }
+      img.removeAttribute("src");
+      img.classList.add("hidden");
       noData.classList.remove("hidden");
       return;
     }
-    var sta = meteorologicalData.series[String(noaaId)];
-    if (!sta) {
-      if (chartMeteorological) { chartMeteorological.destroy(); chartMeteorological = null; }
+    var base = getBasePath();
+    img.onload = function () { img.classList.remove("hidden"); noData.classList.add("hidden"); };
+    img.onerror = function () {
+      img.removeAttribute("src");
+      img.classList.add("hidden");
       noData.classList.remove("hidden");
-      return;
-    }
-    var datasets = [];
-    var labels = { air_temperature: "Air temp °C", wind: "Wind m/s", air_pressure: "Pressure hPa", water_temperature: "Water temp °C", humidity: "Humidity %", visibility: "Visibility km", water_level: "Water level" };
-    if (sta.water_level && (sta.water_level.verified || []).length) {
-      datasets.push({ label: "Water level", data: sta.water_level.verified.map(function (d) { return { x: d.date, y: d.value }; }), borderColor: "#4682b4", fill: false, tension: 0.1 });
-    }
-    ["air_temperature", "wind", "air_pressure", "water_temperature"].forEach(function (k) {
-      if (sta[k] && sta[k].length) {
-        datasets.push({ label: labels[k] || k, data: sta[k].map(function (d) { return { x: d.date, y: d.value }; }), borderColor: "#58a6ff", fill: false, tension: 0.1 });
-      }
-    });
-    if (datasets.length === 0) {
-      if (chartMeteorological) { chartMeteorological.destroy(); chartMeteorological = null; }
-      noData.classList.remove("hidden");
-      return;
-    }
-    noData.classList.add("hidden");
-    var yMax = 0;
-    datasets.forEach(function (ds) { ds.data.forEach(function (p) { if (p.y > yMax) yMax = p.y; }); });
-    if (yMax <= 0) yMax = 1;
+    };
+    img.classList.add("hidden");
+    img.src = base + "images/noaa/" + noaaId + "_meteorological.png";
     var titleEl = get("meteorological-title");
     if (titleEl) titleEl.textContent = "Water level & meteorological — Station " + noaaId;
-    var opts = Object.assign({}, chartOptions, {
-      plugins: Object.assign({}, chartOptions.plugins, {
-        legend: { display: true, position: "top", labels: { color: "#333", boxWidth: 12 } },
-        annotation: { annotations: buildStormAnnotations(stormsData.storms || [], yMax * 1.05, yMax * 0.88) },
-      }),
-    });
-    if (chartMeteorological) chartMeteorological.destroy();
-    chartMeteorological = new Chart(canvas.getContext("2d"), {
-      type: "line",
-      data: { datasets: datasets },
-      options: opts,
-    });
   }
 
   function updatePrecipitationFigure(noaaId) {
     var wrap = get("precipitation-wrap");
-    var canvas = get("chart-precipitation");
+    var img = get("precipitation-figure");
     var noData = get("precipitation-no-data");
-    if (!wrap || !canvas || !noData) return;
+    if (!wrap || !img || !noData) return;
     wrap.classList.remove("hidden");
     if (!noaaId) {
-      if (chartPrecipitation) { chartPrecipitation.destroy(); chartPrecipitation = null; }
+      img.removeAttribute("src");
+      img.classList.add("hidden");
       noData.classList.remove("hidden");
       return;
     }
-    var arr = (precipitationData.series && precipitationData.series[String(noaaId)]) || [];
-    if (!arr.length) {
-      if (chartPrecipitation) { chartPrecipitation.destroy(); chartPrecipitation = null; }
+    var base = getBasePath();
+    img.onload = function () { img.classList.remove("hidden"); noData.classList.add("hidden"); };
+    img.onerror = function () {
+      img.removeAttribute("src");
+      img.classList.add("hidden");
       noData.classList.remove("hidden");
-      return;
-    }
-    noData.classList.add("hidden");
-    var dataPoints = arr.map(function (d) { return { x: d.date, y: d.value }; });
-    var yMax = 0;
-    dataPoints.forEach(function (p) { if (p.y > yMax) yMax = p.y; });
-    if (yMax <= 0) yMax = 1;
+    };
+    img.classList.add("hidden");
+    img.src = base + "images/noaa/precipitation_" + noaaId + ".png";
     var titleEl = get("precipitation-title");
     if (titleEl) titleEl.textContent = "Precipitation (mm/day) — Station " + noaaId;
-    var opts = Object.assign({}, chartOptions, {
-      plugins: Object.assign({}, chartOptions.plugins, {
-        annotation: { annotations: buildStormAnnotations(stormsData.storms || [], yMax * 1.05, yMax * 0.88) },
-      }),
-    });
-    if (chartPrecipitation) chartPrecipitation.destroy();
-    chartPrecipitation = new Chart(canvas.getContext("2d"), {
-      type: "line",
-      data: {
-        datasets: [{ label: "Precipitation", data: dataPoints, borderColor: "#58a6ff", backgroundColor: "rgba(88, 166, 255, 0.2)", fill: true, tension: 0.1 }],
-      },
-      options: opts,
-    });
   }
 
   function loadNoaaStation(s) {
@@ -729,14 +621,6 @@
   async function init() {
     dischargeData = await loadDischargeData();
     stormsData = await loadStormsData();
-    var wl = await loadJsonData("water_level_data");
-    if (wl && wl.series) waterLevelData = wl;
-    var pr = await loadJsonData("precipitation_data");
-    if (pr && pr.series) precipitationData = pr;
-    var met = await loadJsonData("meteorological_data");
-    if (met && met.series) meteorologicalData = met;
-    var vtec = await loadJsonData("vtec_data");
-    if (vtec) { vtecData.series = vtec.series || {}; vtecData.warning_order = vtec.warning_order || []; }
     if (dischargeData && dischargeData.stations && dischargeData.stations.length > 0) {
       document.getElementById("api-error-banner").classList.add("hidden");
     }
