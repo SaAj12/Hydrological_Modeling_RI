@@ -36,6 +36,7 @@ DEFAULT_OUTPUT_DIR = os.path.join(PROJECT_ROOT, "pr_extracted")
 
 # IMERG daily NetCDF: precipitation variable and coords
 PR_VAR_NAMES = ("precipitationCal", "precipitation", "precipitationUncal")
+MIN_DATE = dt.date(2010, 1, 1)
 LAT_NAMES = ("lat", "latitude", "Latitude")
 LON_NAMES = ("lon", "longitude", "Longitude")
 
@@ -221,9 +222,9 @@ def run(
                 usgs_ids.add(loc["id"])
         print(f"Added {len(noaa_locs)} NOAA locations from {noaa_csv_path}")
 
-    files = list_nc4_dates(input_dir)
+    files = [(d, p) for d, p in list_nc4_dates(input_dir) if d >= MIN_DATE]
     if not files:
-        print(f"No daily NetCDF files found in {input_dir}", file=sys.stderr)
+        print(f"No daily NetCDF files on or after {MIN_DATE} found in {input_dir}", file=sys.stderr)
         sys.exit(1)
     print(f"Found {len(files)} daily files")
 

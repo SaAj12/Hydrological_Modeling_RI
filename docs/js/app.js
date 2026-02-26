@@ -202,8 +202,8 @@
     if (titleEl) titleEl.textContent = "Water level (m MLLW) — Station " + noaaId;
   }
 
-  var MET_PRODUCTS = ["air_pressure", "air_temperature", "water_temperature", "wind", "humidity"];
-  var MET_TITLES = { air_pressure: "Air pressure", air_temperature: "Air temperature", water_temperature: "Water temperature", wind: "Wind", humidity: "Humidity" };
+  var MET_PRODUCTS = ["air_pressure", "air_temperature", "water_temperature", "wind", "humidity", "visibility"];
+  var MET_TITLES = { air_pressure: "Air pressure", air_temperature: "Air temperature", water_temperature: "Water temperature", wind: "Wind", humidity: "Humidity", visibility: "Visibility" };
 
   function updateMetProductFigure(noaaId, product) {
     var wrap = get(product + "-wrap");
@@ -255,6 +255,32 @@
     if (titleEl) titleEl.textContent = "Precipitation (mm/day) — Station " + noaaId;
   }
 
+  function updatePrecipitationFigureForUsgs(stationId) {
+    var wrap = get("precipitation-wrap");
+    var img = get("precipitation-figure");
+    var noData = get("precipitation-no-data");
+    if (!wrap || !img || !noData) return;
+    wrap.classList.remove("hidden");
+    if (!stationId) {
+      img.removeAttribute("src");
+      img.classList.add("hidden");
+      noData.classList.remove("hidden");
+      return;
+    }
+    var id8 = formatStationIdDisplay(stationId);
+    var base = getBasePath();
+    img.onload = function () { img.classList.remove("hidden"); noData.classList.add("hidden"); };
+    img.onerror = function () {
+      img.removeAttribute("src");
+      img.classList.add("hidden");
+      noData.classList.remove("hidden");
+    };
+    img.classList.add("hidden");
+    img.src = base + "images/pr/precipitation_" + id8 + ".png";
+    var titleEl = get("precipitation-title");
+    if (titleEl) titleEl.textContent = "Precipitation (mm/day) — Station " + id8;
+  }
+
   function loadNoaaStation(s) {
     get("discharge-select").value = "";
     var meta = (s && s.lat != null && s.lon != null)
@@ -290,7 +316,8 @@
       var w = get(p + "-wrap");
       if (w) { w.classList.add("hidden"); var img = get(p + "-figure"); if (img) img.removeAttribute("src"); }
     });
-    get("precipitation-wrap").classList.add("hidden");
+    get("precipitation-wrap").classList.remove("hidden");
+    updatePrecipitationFigureForUsgs(stationId);
     var meta = (lat != null && lon != null)
       ? "Lat " + Number(lat).toFixed(4) + "°, Lon " + Number(lon).toFixed(4) + "°"
       : "Discharge station";

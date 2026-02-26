@@ -1,0 +1,82 @@
+{
+  "sensors": [
+    {
+      "name": "West River bridge at Wanskuck Mill, Providence, RI",
+      "lat": 41.8548,
+      "lon": -71.4295,
+      "sensorType": "fluvial"
+    },
+    {
+      "name": "Matunuck Marina, Wakefield, RI",
+      "lat": 41.3856,
+      "lon": -71.5251,
+      "sensorType": "tide"
+    },
+    {
+      "name": "URI Sailing Center, Wakefield, RI",
+      "lat": 41.427,
+      "lon": -71.497,
+      "sensorType": "tide"
+    },
+    {
+      "name": "Geochem Building, Brown University, Providence, RI",
+      "lat": 41.8256,
+      "lon": -71.3991,
+      "sensorType": "overland"
+    },
+    {
+      "name": "Manton Ave., Woonasquatucket River, Providence, RI",
+      "lat": 41.8172,
+      "lon": -71.4435,
+      "sensorType": "fluvial"
+    },
+    {
+      "name": "H dock, Galilee Harbor, Narragansett, RI",
+      "lat": 41.3778,
+      "lon": -71.5127,
+      "sensorType": "tide"
+    },
+    {
+      "name": "Fox Point Upstream, Providence, RI",
+      "lat": 41.8168,
+      "lon": -71.4015,
+      "sensorType": "tide"
+    },
+    {
+      "name": "Fox Point Downstream, Providence, RI",
+      "lat": 41.8158,
+      "lon": -71.4005,
+      "sensorType": "tide"
+    },
+    {
+      "name": "Delaine St. bridge, Woonasquatucket River, Providence, RI",
+      "lat": 41.8193,
+      "lon": -71.4422,
+      "sensorType": "fluvial"
+    },
+    {
+      "name": "Pleasant Valley Parkway at Academy, Providence, RI",
+      "lat": 41.8366,
+      "lon": -71.4443,
+      "sensorType": "fluvial"
+    },
+    {
+      "name": "Charles St. bridge, West River, Providence, RI",
+      "lat": 41.8442,
+      "lon": -71.4186,
+      "sensorType": "fluvial"
+    },
+    {
+      "name": "UU dock, Galilee Harbor, Narragansett, RI",
+      "lat": 41.3835,
+      "lon": -71.5084,
+      "sensorType": "tide"
+    },
+    {
+      "name": "Valley Rd and Amherst Rd, Providence, RI",
+      "lat": 41.8232,
+      "lon": -71.4398,
+      "sensorType": "overland"
+    }
+  ]
+}

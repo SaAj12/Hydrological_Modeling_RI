@@ -5,10 +5,10 @@ Downloads full file temporarily, subsets by bbox, saves regional .nc, deletes fu
 
 Domain: 39.1–44.4°N, 74.2–68.7°W (original bbox + 2° each direction).
 
-Usage (from project root D:\\go\\pr):
+Usage (from project root):
   pip install requests xarray netCDF4
-  python scripts/download_gpm_imerg_region_cloud.py   # all data 1998-01-01 through today
-  python scripts/download_gpm_imerg_region_cloud.py --begin 1998-01-01 --end 2024-12-31
+  python scripts/download_gpm_imerg_region_cloud.py   # 2010-01-01 through 2025-12-31
+  python scripts/download_gpm_imerg_region_cloud.py --begin 2010-01-01 --end 2025-12-31
 
 Output: gpm_imerg_region/gpm_imerg_region_YYYYMMDD.nc
 """
@@ -30,8 +30,8 @@ EAST = -68.711999   # was -70.711999 + 2
 # IMERG daily uses lon -180..180 (not 0-360) and lat -90..90, both ascending
 
 DEFAULT_OUTPUT_DIR = os.path.join(PROJECT_ROOT, "gpm_imerg_region")
-DEFAULT_START = dt.date(1998, 1, 1)
-DEFAULT_END = None  # today; all available data from 1998-01-01 through latest
+DEFAULT_START = dt.date(2010, 1, 1)
+DEFAULT_END = dt.date(2025, 12, 31)
 
 
 def get_earthdata_auth():
@@ -52,11 +52,13 @@ def get_earthdata_auth():
     return None, None
 
 
-def run(begin_date: dt.date, end_date: dt.date = None, out_dir: str = DEFAULT_OUTPUT_DIR):
+def run(begin_date: dt.date = None, end_date: dt.date = None, out_dir: str = DEFAULT_OUTPUT_DIR):
     import tempfile
 
+    if begin_date is None:
+        begin_date = DEFAULT_START
     if end_date is None:
-        end_date = dt.date.today()
+        end_date = DEFAULT_END
     os.makedirs(out_dir, exist_ok=True)
     user, password = get_earthdata_auth()
     if not user or not password:
@@ -150,8 +152,8 @@ def run(begin_date: dt.date, end_date: dt.date = None, out_dir: str = DEFAULT_OU
 
 def main():
     p = argparse.ArgumentParser(description="Download GPM IMERG regional subset (HTTPS + .netrc)")
-    p.add_argument("--begin", "-b", default="1998-01-01", help="Start date YYYY-MM-DD")
-    p.add_argument("--end", "-e", default=None, help="End date YYYY-MM-DD (default: today)")
+    p.add_argument("--begin", "-b", default="2010-01-01", help="Start date YYYY-MM-DD")
+    p.add_argument("--end", "-e", default="2025-12-31", help="End date YYYY-MM-DD")
     p.add_argument("--output-dir", "-o", default=DEFAULT_OUTPUT_DIR, help="Output directory")
     args = p.parse_args()
     begin = dt.datetime.strptime(args.begin, "%Y-%m-%d").date()

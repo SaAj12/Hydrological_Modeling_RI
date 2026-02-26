@@ -13,6 +13,10 @@ if errorlevel 1 (
 echo.
 echo Exporting NOAA stations...
 python scripts/export_noaa_stations.py
+
+echo.
+echo Exporting sensors...
+python scripts/export_sensors_data.py
 if errorlevel 1 (
   echo NOAA export failed. Ensure noaa/noaa_stations_in_domain.csv exists.
   pause
