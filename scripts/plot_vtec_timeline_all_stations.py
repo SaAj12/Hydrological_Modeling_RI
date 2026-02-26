@@ -104,9 +104,9 @@ def plot_one(csv_path: str, output_path: str, station_id: str, x_min, x_max) -> 
     apply_chart_xaxis(ax, set_limits=False)  # limits set above; apply 10-year labels
     ax.tick_params(axis="both", labelsize=14)
     plt.xticks(rotation=0)
-    plt.tight_layout()
+    fig.subplots_adjust(left=0.08, right=0.98, top=0.94, bottom=0.1)
     os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
-    plt.savefig(output_path, dpi=150, bbox_inches="tight")
+    plt.savefig(output_path, dpi=150, bbox_inches="tight", pad_inches=0.02)
     plt.close()
     return True
 

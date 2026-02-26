@@ -36,12 +36,6 @@
         <div id="panel-content" class="content hidden">
           <h2 id="point-title">Station</h2>
           <p id="point-meta" class="meta"></p>
-          <div class="storm-controls">
-            <label>Storm events (RI/MA/CT 2010–2025):</label>
-            <select id="storm-select">
-              <option value="">— show all (with storm bars) —</option>
-            </select>
-          </div>
           <div class="charts">
             <div id="discharge-chart-wrap" class="chart-wrap">
               <h3 id="discharge-chart-title">Discharge (cfs, Cubic feet per second)</h3>
@@ -57,10 +51,30 @@
               <img id="water-level-figure" src="" alt="Water level" class="vtec-img" />
               <p id="water-level-no-data" class="vtec-no-data hidden">No water level data available.</p>
             </div>
-            <div id="meteorological-wrap" class="chart-wrap vtec-wrap hidden">
-              <h3 id="meteorological-title">Water level & meteorological — Station —</h3>
-              <img id="meteorological-figure" src="" alt="Meteorological" class="vtec-img" />
-              <p id="meteorological-no-data" class="vtec-no-data hidden">No meteorological data available.</p>
+            <div id="air-pressure-wrap" class="chart-wrap vtec-wrap hidden">
+              <h3 id="air-pressure-title">Air pressure — Station —</h3>
+              <img id="air-pressure-figure" src="" alt="Air pressure" class="vtec-img" />
+              <p id="air-pressure-no-data" class="vtec-no-data hidden">No air pressure data available.</p>
+            </div>
+            <div id="air-temperature-wrap" class="chart-wrap vtec-wrap hidden">
+              <h3 id="air-temperature-title">Air temperature — Station —</h3>
+              <img id="air-temperature-figure" src="" alt="Air temperature" class="vtec-img" />
+              <p id="air-temperature-no-data" class="vtec-no-data hidden">No air temperature data available.</p>
+            </div>
+            <div id="water-temperature-wrap" class="chart-wrap vtec-wrap hidden">
+              <h3 id="water-temperature-title">Water temperature — Station —</h3>
+              <img id="water-temperature-figure" src="" alt="Water temperature" class="vtec-img" />
+              <p id="water-temperature-no-data" class="vtec-no-data hidden">No water temperature data available.</p>
+            </div>
+            <div id="wind-wrap" class="chart-wrap vtec-wrap hidden">
+              <h3 id="wind-title">Wind — Station —</h3>
+              <img id="wind-figure" src="" alt="Wind" class="vtec-img" />
+              <p id="wind-no-data" class="vtec-no-data hidden">No wind data available.</p>
+            </div>
+            <div id="humidity-wrap" class="chart-wrap vtec-wrap hidden">
+              <h3 id="humidity-title">Humidity — Station —</h3>
+              <img id="humidity-figure" src="" alt="Humidity" class="vtec-img" />
+              <p id="humidity-no-data" class="vtec-no-data hidden">No humidity data available.</p>
             </div>
             <div id="precipitation-wrap" class="chart-wrap vtec-wrap hidden">
               <h3 id="precipitation-title">Precipitation (mm/day) — Station —</h3>
@@ -81,7 +95,6 @@
   <script src="vendor/leaflet/leaflet.js"></script>
   <script src="vendor/chart/chart.umd.min.js"></script>
   <script src="vendor/chart/chartjs-adapter-date-fns.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.2.1/dist/chartjs-plugin-annotation.min.js"></script>
   <script src="js/config.js"></script>
   <script src="js/app.js"></script>
 </body>

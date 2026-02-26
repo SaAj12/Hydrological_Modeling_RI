@@ -10,7 +10,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 FRONTEND = PROJECT_ROOT / "frontend"
 DOCS = PROJECT_ROOT / "docs"
 
-SKIP_DATA_FILES = {"water_level_data.json", "meteorological_data.json", "precipitation_data.json", "vtec_data.json"}
+SKIP_DATA_FILES = {"water_level_data.json", "meteorological_data.json", "precipitation_data.json", "vtec_data.json", "storms_data.json"}
 
 def main():
     DOCS.mkdir(exist_ok=True)

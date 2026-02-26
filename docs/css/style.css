@@ -134,30 +134,13 @@ body {
 .panel .meta a:hover {
   text-decoration: underline;
 }
-.storm-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-.storm-controls label {
-  font-size: 0.85rem;
-  color: #8b949e;
-  white-space: nowrap;
-}
-.storm-controls select {
-  padding: 0.3rem 0.5rem;
-  border: 1px solid #30363d;
-  border-radius: 6px;
-  background: #0d1117;
-  color: #e6edf3;
-  font-size: 0.85rem;
-  min-width: 12rem;
-  max-width: 280px;
-}
 .chart-wrap.hidden,
 #water-level-wrap.hidden,
-#meteorological-wrap.hidden,
+#air-pressure-wrap.hidden,
+#air-temperature-wrap.hidden,
+#water-temperature-wrap.hidden,
+#wind-wrap.hidden,
+#humidity-wrap.hidden,
 #precipitation-wrap.hidden {
   display: none !important;
 }
@@ -170,16 +153,15 @@ body {
   background: #ffffff;
   border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 0.75rem 1rem 1rem;
-  margin-bottom: 2rem;
+  padding: 0.35rem 0.5rem 0.5rem;
+  margin-bottom: 1rem;
   position: relative;
-  height: 240px;
 }
 .chart-wrap:last-child {
   margin-bottom: 0;
 }
 .chart-wrap h3 {
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.35rem 0;
   font-size: 0.95rem;
   font-weight: 600;
   color: #333;
@@ -189,52 +171,59 @@ body {
   height: 200px !important;
   display: block;
 }
+/* All figures: same size, 12×4 aspect ratio, no extra white space */
 .vtec-wrap,
 #water-level-wrap,
-#meteorological-wrap,
+#air-pressure-wrap,
+#air-temperature-wrap,
+#water-temperature-wrap,
+#wind-wrap,
+#humidity-wrap,
 #precipitation-wrap {
   margin-top: 0;
-  min-height: 240px;
-  height: 240px !important;
-  display: flex !important;
-  flex-direction: column !important;
+  display: flex;
+  flex-direction: column;
   align-items: stretch;
 }
 .vtec-wrap h3,
 #water-level-wrap h3,
-#meteorological-wrap h3,
+#air-pressure-wrap h3,
+#air-temperature-wrap h3,
+#water-temperature-wrap h3,
+#wind-wrap h3,
+#humidity-wrap h3,
 #precipitation-wrap h3 {
   flex-shrink: 0;
   text-align: left;
   width: 100%;
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
   color: #333;
 }
 .vtec-wrap canvas,
 #water-level-wrap canvas,
-#meteorological-wrap canvas,
 #precipitation-wrap canvas {
   height: 200px !important;
 }
 .vtec-wrap .vtec-img,
 #water-level-wrap .vtec-img,
-#meteorological-wrap .vtec-img,
+#air-pressure-wrap .vtec-img,
+#air-temperature-wrap .vtec-img,
+#water-temperature-wrap .vtec-img,
+#wind-wrap .vtec-img,
+#humidity-wrap .vtec-img,
 #precipitation-wrap .vtec-img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  display: block;
-  flex: 1;
-  min-height: 160px;
   width: 100%;
+  height: 200px;
+  object-fit: contain;
+  object-position: center;
+  display: block;
 }
 .vtec-wrap .vtec-img.hidden {
   display: none;
 }
 .vtec-wrap .vtec-no-data {
-  flex: 1;
-  min-height: 180px;
+  height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;

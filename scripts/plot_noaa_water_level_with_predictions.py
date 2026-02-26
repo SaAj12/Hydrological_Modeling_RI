@@ -72,6 +72,24 @@ def load_predictions(csv_path):
     return df["dt"].values, df["value"].values
 
 
+def load_observed_minus_predicted(csv_path):
+    """Load precomputed Observed − Predicted from {station}_observed_minus_predicted.csv."""
+    import pandas as pd
+    if not os.path.isfile(csv_path):
+        return None, None
+    df = pd.read_csv(csv_path)
+    if df.empty or len(df.columns) < 2:
+        return None, None
+    time_col = _find_col(df, ["Date Time", "DateTime"]) or df.columns[0]
+    val_col = _find_col(df, ["Observed_minus_Predicted", "Observed minus Predicted", "value"]) or df.columns[1]
+    df["dt"] = df[time_col].apply(parse_dt)
+    df["value"] = pd.to_numeric(df[val_col], errors="coerce")
+    df = df.dropna(subset=["dt", "value"])
+    if df.empty:
+        return None, None
+    return df["dt"].values, df["value"].values
+
+
 def run_plot(input_dir, output_dir, station):
     import pandas as pd
     import matplotlib
@@ -81,6 +99,7 @@ def run_plot(input_dir, output_dir, station):
 
     wl_path = os.path.join(input_dir, f"{station}_water_level.csv")
     pred_path = os.path.join(input_dir, f"{station}_predictions.csv")
+    omp_path = os.path.join(input_dir, f"{station}_observed_minus_predicted.csv")
 
     if not os.path.isfile(wl_path):
         print(f"  Skip: {wl_path} not found", file=sys.stderr)
@@ -106,8 +125,13 @@ def run_plot(input_dir, output_dir, station):
             prelim_dt.append(wl_dt[i])
             prelim_val.append(wl_val[i])
 
+    # Observed − Predicted: prefer precomputed file, else merge water_level and predictions
     res_dt, res_val = [], []
-    if pred_dt is not None and len(pred_dt) > 0:
+    if os.path.isfile(omp_path):
+        res_dt, res_val = load_observed_minus_predicted(omp_path)
+        if res_dt is None:
+            res_dt, res_val = [], []
+    if (not res_dt or len(res_dt) == 0) and pred_dt is not None and len(pred_dt) > 0:
         obs_df = pd.DataFrame({"dt": pd.to_datetime(wl_dt), "obs": wl_val})
         pred_df = pd.DataFrame({"dt": pd.to_datetime(pred_dt), "pred": pred_val})
         merged = obs_df.merge(pred_df, on="dt", how="inner")
@@ -123,20 +147,20 @@ def run_plot(input_dir, output_dir, station):
         ax.plot(prelim_dt, prelim_val, color="orange", linewidth=lw, alpha=0.8, label="Preliminary")
     if pred_dt is not None and len(pred_dt) > 0:
         ax.plot(pred_dt, pred_val, color="green", linewidth=lw, alpha=0.8, label="Predictions")
-    if len(res_dt) > 0:
+    if res_dt is not None and len(res_dt) > 0:
         ax.plot(res_dt, res_val, color="crimson", linewidth=lw, alpha=0.8, label="Observed − Predicted")
 
     ax.set_xlabel("")
-    ax.set_ylabel("")
-    ax.set_title(f"Station {station} — Water level (m MLLW)", fontsize=12)
+    ax.set_ylabel("m MLLW")
+    ax.set_title(f"Station {station} — Water level: Predictions, Verified, Preliminary, Observed − Predicted", fontsize=12)
     ax.legend(loc="upper right", fontsize=8)
     ax.grid(True, alpha=0.3)
     apply_chart_xaxis(ax, set_limits=True)
     plt.xticks(rotation=0)
-    plt.tight_layout()
+    fig.subplots_adjust(left=0.06, right=0.98, top=0.94, bottom=0.1)
     out_path = os.path.join(output_dir, f"{station}_water_level_with_predictions.png")
     os.makedirs(output_dir, exist_ok=True)
-    plt.savefig(out_path, dpi=150, bbox_inches="tight")
+    plt.savefig(out_path, dpi=150, bbox_inches="tight", pad_inches=0.02)
     plt.close()
     return True
 

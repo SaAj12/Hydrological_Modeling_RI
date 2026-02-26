@@ -8,7 +8,6 @@
   let chartDischarge = null;
   let dischargeData = null;
   let noaaStations = [];
-  let stormsData = { storms: [] };
 
   /** Format station ID as 8-digit text (e.g. 1108000 -> "01108000") */
   function formatStationIdDisplay(id) {
@@ -71,26 +70,7 @@
     },
   };
 
-  function buildStormAnnotations(storms, yBarTop, yBarBottom) {
-    const annotations = {};
-    (storms || []).forEach(function (s, i) {
-      const id = "storm_" + (s.id || i);
-      annotations[id] = {
-        type: "box",
-        xMin: s.startDate,
-        xMax: s.endDate,
-        yMin: yBarBottom,
-        yMax: yBarTop,
-        backgroundColor: "rgba(0, 0, 0, 0.12)",
-        borderColor: "rgba(0, 0, 0, 0.25)",
-        borderWidth: 1,
-      };
-    });
-    return annotations;
-  }
-
   function drawDischargeChart(dischargeDataArr, stationIdDisplay) {
-    var selectedStormId = (get("storm-select") && get("storm-select").value) || "";
     destroyCharts();
     var arr = dischargeDataArr || [];
     if (arr.length === 0) return;
@@ -99,55 +79,16 @@
     var ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    var storms = stormsData.storms || [];
-    var selectedStorm = selectedStormId
-      ? storms.find(function (s) { return s.id === selectedStormId; })
-      : null;
-
-    if (selectedStorm) {
-      var startD = selectedStorm.startDate;
-      var endD = selectedStorm.endDate;
-      arr = arr.filter(function (d) {
-        var dStr = (d.date || "").substring(0, 10);
-        return dStr >= startD && dStr <= endD;
-      });
-      if (arr.length === 0) arr = dischargeDataArr || [];
-    }
-
     var dataPoints = arr.map(function (d) {
       return { x: d.date, y: d.value != null ? d.value : null };
     });
-    var yMaxVal = 0;
-    dataPoints.forEach(function (p) {
-      if (p.y != null && p.y > yMaxVal) yMaxVal = p.y;
-    });
-    if (yMaxVal <= 0) yMaxVal = 100;
-    var yBarTop = yMaxVal * 1.05;
-    var yBarBottom = yMaxVal * 0.88;
-
     var titleText = stationIdDisplay
       ? "Discharge (cfs) — Station " + stationIdDisplay
       : "Discharge (cfs)";
-    if (selectedStorm) {
-      titleText += " — " + selectedStorm.displayLabel;
-    }
-
-    var xScaleOpts = { min: "2010-01-01", max: "2025-12-31" };
-    if (selectedStorm) {
-      xScaleOpts.min = selectedStorm.startDate;
-      xScaleOpts.max = selectedStorm.endDate;
-    }
-
-    var annotations = buildStormAnnotations(storms, yBarTop, yBarBottom);
 
     var opts = Object.assign({}, chartOptions, {
-      plugins: Object.assign({}, chartOptions.plugins, {
-        annotation: {
-          annotations: annotations,
-        },
-      }),
       scales: Object.assign({}, chartOptions.scales, {
-        x: Object.assign({}, chartOptions.scales.x, xScaleOpts),
+        x: Object.assign({}, chartOptions.scales.x, { min: "2010-01-01", max: "2025-12-31" }),
         y: Object.assign({}, chartOptions.scales.y, { min: 0 }),
       }),
     });
@@ -261,10 +202,14 @@
     if (titleEl) titleEl.textContent = "Water level (m MLLW) — Station " + noaaId;
   }
 
-  function updateMeteorologicalFigureForStation(noaaId) {
-    var wrap = get("meteorological-wrap");
-    var img = get("meteorological-figure");
-    var noData = get("meteorological-no-data");
+  var MET_PRODUCTS = ["air_pressure", "air_temperature", "water_temperature", "wind", "humidity"];
+  var MET_TITLES = { air_pressure: "Air pressure", air_temperature: "Air temperature", water_temperature: "Water temperature", wind: "Wind", humidity: "Humidity" };
+
+  function updateMetProductFigure(noaaId, product) {
+    var wrap = get(product + "-wrap");
+    var img = get(product + "-figure");
+    var noData = get(product + "-no-data");
+    var titleEl = get(product + "-title");
     if (!wrap || !img || !noData) return;
     wrap.classList.remove("hidden");
     if (!noaaId) {
@@ -281,9 +226,8 @@
       noData.classList.remove("hidden");
     };
     img.classList.add("hidden");
-    img.src = base + "images/noaa/" + noaaId + "_meteorological.png";
-    var titleEl = get("meteorological-title");
-    if (titleEl) titleEl.textContent = "Water level & meteorological — Station " + noaaId;
+    img.src = base + "images/noaa/" + noaaId + "_" + product + ".png";
+    if (titleEl) titleEl.textContent = (MET_TITLES[product] || product) + " — Station " + noaaId;
   }
 
   function updatePrecipitationFigure(noaaId) {
@@ -322,12 +266,12 @@
     get("discharge-chart-wrap").classList.add("hidden");
     get("vtec-figure-wrap").classList.remove("hidden");
     get("water-level-wrap").classList.remove("hidden");
-    get("meteorological-wrap").classList.remove("hidden");
+    MET_PRODUCTS.forEach(function (p) { get(p + "-wrap") && get(p + "-wrap").classList.remove("hidden"); });
     get("precipitation-wrap").classList.remove("hidden");
     destroyCharts();
     updateVtecFigure(s && s.id ? s.id : null);
     updateWaterLevelFigureForStation(s && s.id ? s.id : null);
-    updateMeteorologicalFigureForStation(s && s.id ? s.id : null);
+    MET_PRODUCTS.forEach(function (p) { updateMetProductFigure(s && s.id ? s.id : null, p); });
     updatePrecipitationFigure(s && s.id ? s.id : null);
   }
 
@@ -342,12 +286,10 @@
       var waterImg = get("water-level-figure");
       if (waterImg) waterImg.src = "";
     }
-    var metWrap = get("meteorological-wrap");
-    if (metWrap) {
-      metWrap.classList.add("hidden");
-      var metImg = get("meteorological-figure");
-      if (metImg) metImg.src = "";
-    }
+    MET_PRODUCTS.forEach(function (p) {
+      var w = get(p + "-wrap");
+      if (w) { w.classList.add("hidden"); var img = get(p + "-figure"); if (img) img.removeAttribute("src"); }
+    });
     get("precipitation-wrap").classList.add("hidden");
     var meta = (lat != null && lon != null)
       ? "Lat " + Number(lat).toFixed(4) + "°, Lon " + Number(lon).toFixed(4) + "°"
@@ -446,26 +388,6 @@
       return await res.json();
     } catch (e) {
       return null;
-    }
-  }
-
-  async function loadStormsData() {
-    if (stormsData.storms && stormsData.storms.length > 0) return stormsData;
-    var base = "";
-    var path = location.pathname || "";
-    if (path && path !== "/" && path !== "/index.html") {
-      var segs = path.split("/").filter(Boolean);
-      if (segs.length > 0) base = "/" + segs[0] + "/";
-    }
-    var dataUrl = base + "data/storms_data.json";
-    try {
-      var res = await fetch(dataUrl);
-      if (!res.ok) return stormsData;
-      stormsData = await res.json();
-      return stormsData;
-    } catch (e) {
-      console.warn("Failed to load storms data:", e);
-      return stormsData;
     }
   }
 
@@ -620,37 +542,8 @@
 
   async function init() {
     dischargeData = await loadDischargeData();
-    stormsData = await loadStormsData();
     if (dischargeData && dischargeData.stations && dischargeData.stations.length > 0) {
       document.getElementById("api-error-banner").classList.add("hidden");
-    }
-    var stormSelect = get("storm-select");
-    if (stormSelect && stormsData.storms && stormsData.storms.length > 0) {
-      stormsData.storms.forEach(function (s) {
-        var opt = document.createElement("option");
-        opt.value = s.id;
-        opt.textContent = s.displayLabel;
-        stormSelect.appendChild(opt);
-      });
-      stormSelect.addEventListener("change", function () {
-        var dischargeWrap = get("discharge-chart-wrap");
-        if (dischargeWrap && !dischargeWrap.classList.contains("hidden")) {
-          var v = get("discharge-select").value;
-          if (v) {
-            var sid = formatStationIdDisplay(v);
-            fetchStationSeries(v).then(function (series) {
-              if (series.length > 0) drawDischargeChart(series, sid);
-            });
-          }
-        }
-        var noaaId = get("noaa-select") && get("noaa-select").value;
-        if (noaaId) {
-          updateWaterLevelFigureForStation(noaaId);
-          updatePrecipitationFigure(noaaId);
-          updateMeteorologicalFigureForStation(noaaId);
-          updateVtecFigure(noaaId);
-        }
-      });
     }
     await initMap();
   }

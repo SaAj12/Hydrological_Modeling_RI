@@ -95,9 +95,9 @@ def plot_one(pr_csv_path, out_path, station_id):
     apply_chart_xaxis(ax, set_limits=True)
     ax.grid(True, alpha=0.3)
     plt.xticks(rotation=0)
-    plt.tight_layout()
+    fig.subplots_adjust(left=0.06, right=0.98, top=0.94, bottom=0.1)
     os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
-    plt.savefig(out_path, dpi=150, bbox_inches="tight")
+    plt.savefig(out_path, dpi=150, bbox_inches="tight", pad_inches=0.02)
     plt.close()
     return True
 
