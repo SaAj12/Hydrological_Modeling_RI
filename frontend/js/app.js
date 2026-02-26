@@ -161,6 +161,7 @@
     return "";
   }
 
+  /** Show water level plot for any NOAA station that has images/noaa/{id}_water_level_with_predictions.png */
   function updateWaterLevelFigureForStation(noaaId) {
     var wrap = get("water-level-wrap");
     var img = get("water-level-figure");
@@ -168,18 +169,56 @@
     if (!wrap || !img || !noData) return;
     wrap.classList.remove("hidden");
     var base = getBasePath();
-    var id = noaaId || "8454000";
-    var src = base + "images/noaa/" + id + "_water_level_with_predictions.png";
+    if (!noaaId) {
+      img.classList.add("hidden");
+      img.src = "";
+      noData.classList.remove("hidden");
+      noData.textContent = "No water level data available for this station.";
+      return;
+    }
+    var idStr = String(noaaId);
     img.classList.add("hidden");
     noData.classList.add("hidden");
     img.onerror = function () {
-      img.src = base + "images/noaa/8454000_water_level_with_predictions.png";
+      img.classList.add("hidden");
+      noData.classList.remove("hidden");
+      noData.textContent = "No water level data available for this station.";
     };
     img.onload = function () {
       img.classList.remove("hidden");
       noData.classList.add("hidden");
     };
-    img.src = src;
+    img.src = base + "images/noaa/" + idStr + "_water_level_with_predictions.png";
+  }
+
+  /** Show meteorological plot for any NOAA station with images/noaa/{id}_meteorological.png */
+  function updateMeteorologicalFigureForStation(noaaId) {
+    var wrap = get("meteorological-wrap");
+    var img = get("meteorological-figure");
+    var noData = get("meteorological-no-data");
+    if (!wrap || !img || !noData) return;
+    wrap.classList.remove("hidden");
+    var base = getBasePath();
+    if (!noaaId) {
+      img.classList.add("hidden");
+      img.src = "";
+      noData.classList.remove("hidden");
+      noData.textContent = "No meteorological data available for this station.";
+      return;
+    }
+    var idStr = String(noaaId);
+    img.classList.add("hidden");
+    noData.classList.add("hidden");
+    img.onerror = function () {
+      img.classList.add("hidden");
+      noData.classList.remove("hidden");
+      noData.textContent = "No meteorological data available for this station.";
+    };
+    img.onload = function () {
+      img.classList.remove("hidden");
+      noData.classList.add("hidden");
+    };
+    img.src = base + "images/noaa/" + idStr + "_meteorological.png";
   }
 
   function updatePrecipitationFigure(noaaId) {
@@ -215,10 +254,12 @@
     get("discharge-chart-wrap").classList.add("hidden");
     get("vtec-figure-wrap").classList.remove("hidden");
     get("water-level-wrap").classList.remove("hidden");
+    get("meteorological-wrap").classList.remove("hidden");
     get("precipitation-wrap").classList.remove("hidden");
     destroyCharts();
     updateVtecFigure(s && s.id ? s.id : null);
     updateWaterLevelFigureForStation(s && s.id ? s.id : null);
+    updateMeteorologicalFigureForStation(s && s.id ? s.id : null);
     updatePrecipitationFigure(s && s.id ? s.id : null);
   }
 
@@ -233,6 +274,12 @@
       var waterImg = get("water-level-figure");
       if (waterImg) waterImg.src = "";
     }
+    var metWrap = get("meteorological-wrap");
+    if (metWrap) {
+      metWrap.classList.add("hidden");
+      var metImg = get("meteorological-figure");
+      if (metImg) metImg.src = "";
+    }
     get("precipitation-wrap").classList.add("hidden");
     var meta = (lat != null && lon != null)
       ? "Lat " + Number(lat).toFixed(4) + "°, Lon " + Number(lon).toFixed(4) + "°"
@@ -242,6 +289,8 @@
     var idDisplay = formatStationIdDisplay(stationId);
     var title = displayName ? displayName + " (" + idDisplay + ")" : idDisplay;
     showPanel({ name: title }, { meta: meta });
+    var chartTitleEl = get("discharge-chart-title");
+    if (chartTitleEl) chartTitleEl.textContent = "Discharge (cfs, Cubic feet per second) — Station " + idDisplay;
     updateVtecFigure(stationId);
 
     if (!dischargeData || !dischargeData.series) {

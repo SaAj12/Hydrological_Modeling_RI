@@ -144,10 +144,29 @@ def run_plot(input_dir, output_dir, station):
     return True
 
 
+def load_station_ids(csv_path):
+    """Return list of station IDs from noaa_stations_in_domain.csv."""
+    try:
+        import pandas as pd
+    except ImportError:
+        return []
+    if not os.path.isfile(csv_path):
+        return []
+    df = pd.read_csv(csv_path, encoding="utf-8")
+    col_lower = {str(c).lower().strip(): c for c in df.columns}
+    id_col = col_lower.get("id") or list(df.columns)[0]
+    ids = []
+    for v in df[id_col].dropna().unique():
+        s = str(v).strip()
+        if s and s.isdigit():
+            ids.append(s)
+    return ids
+
+
 def main():
     p = argparse.ArgumentParser(description="Plot NOAA water level (2010–2025), output to docs and frontend")
     p.add_argument("--input-dir", "-i", default=DEFAULT_INPUT_DIR, help="Folder with station CSVs")
-    p.add_argument("--station", "-s", default="8454000", help="Station ID")
+    p.add_argument("--stations", "-s", default=None, help="Comma-separated station IDs (default: all from noaa_stations_in_domain.csv)")
     args = p.parse_args()
 
     try:
@@ -161,16 +180,29 @@ def main():
         print(f"Directory not found: {args.input_dir}", file=sys.stderr)
         sys.exit(1)
 
+    if args.stations:
+        stations = [s.strip() for s in args.stations.split(",") if s.strip()]
+    else:
+        noaa_csv = os.path.join(PROJECT_ROOT, "noaa", "noaa_stations_in_domain.csv")
+        stations = load_station_ids(noaa_csv)
+
     outputs = [
         os.path.join(PROJECT_ROOT, "docs", "images", "noaa"),
         os.path.join(PROJECT_ROOT, "frontend", "images", "noaa"),
     ]
-    ok = False
-    for out_dir in outputs:
-        if run_plot(args.input_dir, out_dir, args.station):
-            print(f"Wrote {args.station}_water_level_with_predictions.png to {out_dir}")
-            ok = True
-    if not ok:
+
+    ok_count = 0
+    for station in stations:
+        wl_path = os.path.join(args.input_dir, f"{station}_water_level.csv")
+        if not os.path.isfile(wl_path):
+            continue
+        for out_dir in outputs:
+            if run_plot(args.input_dir, out_dir, station):
+                print(f"  {station}: wrote to {out_dir}")
+                ok_count += 1
+
+    if ok_count == 0:
+        print("No water level plots generated.", file=sys.stderr)
         sys.exit(1)
 
 

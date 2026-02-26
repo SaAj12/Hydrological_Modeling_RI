@@ -38,7 +38,7 @@
           <p id="point-meta" class="meta"></p>
           <div class="charts">
             <div id="discharge-chart-wrap" class="chart-wrap">
-              <h3>Discharge (cfs, Cubic feet per second)</h3>
+              <h3 id="discharge-chart-title">Discharge (cfs, Cubic feet per second)</h3>
               <canvas id="chart-discharge"></canvas>
             </div>
             <div id="vtec-figure-wrap" class="chart-wrap vtec-wrap hidden">
@@ -50,6 +50,11 @@
               <h3>NOAA water level</h3>
               <img id="water-level-figure" src="" alt="Water level time series" class="vtec-img" />
               <p id="water-level-no-data" class="vtec-no-data hidden">No water level data available.</p>
+            </div>
+            <div id="meteorological-wrap" class="chart-wrap vtec-wrap hidden">
+              <h3>NOAA water level (with predictions) & meteorological</h3>
+              <img id="meteorological-figure" src="" alt="Meteorological time series" class="vtec-img" />
+              <p id="meteorological-no-data" class="vtec-no-data hidden">No meteorological data available.</p>
             </div>
             <div id="precipitation-wrap" class="chart-wrap vtec-wrap hidden">
               <h3>Precipitation (GPM IMERG)</h3>

@@ -136,6 +136,7 @@ body {
 }
 .chart-wrap.hidden,
 #water-level-wrap.hidden,
+#meteorological-wrap.hidden,
 #precipitation-wrap.hidden {
   display: none !important;
 }
@@ -171,6 +172,7 @@ body {
 }
 .vtec-wrap,
 #water-level-wrap,
+#meteorological-wrap,
 #precipitation-wrap {
   margin-top: 1.25rem;
   min-height: 220px;
@@ -181,6 +183,7 @@ body {
 }
 .vtec-wrap h3,
 #water-level-wrap h3,
+#meteorological-wrap h3,
 #precipitation-wrap h3 {
   flex-shrink: 0;
   text-align: left;
@@ -190,6 +193,7 @@ body {
 }
 .vtec-wrap .vtec-img,
 #water-level-wrap .vtec-img,
+#meteorological-wrap .vtec-img,
 #precipitation-wrap .vtec-img {
   max-width: 100%;
   max-height: 100%;

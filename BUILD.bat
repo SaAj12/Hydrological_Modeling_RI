@@ -41,10 +41,19 @@ if errorlevel 1 (
 )
 
 echo.
-echo Plotting NOAA water level...
-python scripts/plot_noaa_water_level_with_predictions.py
+echo Downloading NOAA water level and meteorological data...
+python scripts/download_noaa_water_level.py
+python scripts/download_noaa_meteorological.py
 if errorlevel 1 (
-  echo Water level plot failed. Ensure noaa/8454000_water_level.csv and 8454000_predictions.csv exist.
+  echo NOAA download step had errors.
+)
+
+echo.
+echo Plotting NOAA water level and meteorological...
+python scripts/plot_noaa_water_level_with_predictions.py
+python scripts/plot_noaa_meteorological.py
+if errorlevel 1 (
+  echo NOAA plot step had errors. Ensure noaa/*.csv exist.
 )
 
 echo.

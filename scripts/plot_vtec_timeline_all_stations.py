@@ -36,7 +36,7 @@ ALLOWED_WARNING_NAMES = [
 ]
 ALLOWED_SET = frozenset(ALLOWED_WARNING_NAMES)
 X_MIN = datetime(2010, 1, 1)
-X_MAX = datetime(2025, 12, 31)
+X_MAX = datetime(2025, 12, 31, 23, 59, 59)  # End of 31 Dec 2025
 
 
 def parse_dt(s):
@@ -50,8 +50,8 @@ def parse_dt(s):
     return None
 
 
-def plot_one(csv_path: str, output_path: str, station_id: str) -> bool:
-    """Plot one station's VTEC timeline (filtered classes, x 1950–2025); return True on success."""
+def plot_one(csv_path: str, output_path: str, station_id: str, x_min, x_max) -> bool:
+    """Plot one station's VTEC timeline (filtered classes, x 2010–2025); return True on success."""
     try:
         import pandas as pd
         import matplotlib.pyplot as plt
@@ -102,8 +102,8 @@ def plot_one(csv_path: str, output_path: str, station_id: str) -> bool:
     ax.set_ylabel("")
     ax.set_title(f"VTEC events — Station {station_id}", fontsize=14)
     ax.xaxis_date()
-    # Fixed x-axis: 1 Jan 2010 – 31 Dec 2025 (match discharge chart)
-    ax.set_xlim(mdates.date2num(X_MIN), mdates.date2num(X_MAX))
+    # Fixed x-axis: x_min – x_max (default ends 31 Dec 2025)
+    ax.set_xlim(mdates.date2num(x_min), mdates.date2num(x_max))
     # Same style as discharge: years only, 10-year increment (1950, 1960, 1970, ...)
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
     ax.xaxis.set_major_locator(mdates.YearLocator(5))
@@ -128,7 +128,12 @@ def main():
         "--output-dir", "-o", default=DEFAULT_OUTPUT_DIR,
         help="Directory for PNGs (default: docs/images/vtec)",
     )
+    p.add_argument("--x-min", default=None, help="X-axis start (YYYY-MM-DD, default: 2010-01-01)")
+    p.add_argument("--x-max", default=None, help="X-axis end (YYYY-MM-DD, default: 2025-12-31)")
     args = p.parse_args()
+
+    x_min = datetime.strptime(args.x_min, "%Y-%m-%d") if args.x_min else X_MIN
+    x_max = datetime.strptime(args.x_max + " 23:59:59", "%Y-%m-%d %H:%M:%S") if args.x_max else X_MAX
     output_dir = args.output_dir
 
     try:
@@ -161,13 +166,13 @@ def main():
         os.path.join(PROJECT_ROOT, "frontend", "images", "vtec"),
     ]
     print("Warning types plotted:", ", ".join(ALLOWED_WARNING_NAMES))
-    print("X-axis: 2010-01-01 to 2025-12-31")
+    print("X-axis:", x_min.strftime("%Y-%m-%d"), "to", x_max.strftime("%Y-%m-%d %H:%M"))
     ok = 0
     for staid, csv_path in files:
         wrote = False
         for out_dir in output_dirs:
             out_path = os.path.join(out_dir, f"vtec_timeline_{staid}.png")
-            if plot_one(csv_path, out_path, staid):
+            if plot_one(csv_path, out_path, staid, x_min, x_max):
                 wrote = True
         if wrote:
             print(f"  {staid}")
