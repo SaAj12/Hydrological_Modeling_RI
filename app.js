@@ -42,11 +42,11 @@
     plugins: { legend: { display: false } },
     scales: {
       x: {
-        ticks: { maxTicksLimit: 8, color: "#8b949e", font: { size: 10 } },
+        ticks: { maxTicksLimit: 10, color: "#8b949e", font: { size: 10 } },
         grid: { color: "#21262d" },
         type: "time",
-        time: { unit: "year", displayFormats: { year: "yyyy", month: "MMM yyyy" } },
-        min: "1950-01-01",
+        time: { unit: "year", stepSize: 2, displayFormats: { year: "yyyy", month: "MMM yyyy" } },
+        min: "2010-01-01",
         max: "2025-12-31",
       },
       y: {

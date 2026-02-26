@@ -1,7 +1,7 @@
 """
 Plot water level: Predictions, Verified observed, Preliminary observed, Observed - Predicted.
 Reads from PROJECT_ROOT/noaa/ (or --input-dir). Writes to docs/images/noaa/ and frontend/images/noaa/.
-X-axis: 1 Jan 1950 – 31 Dec 2025, year labels every 10 years (matches discharge chart).
+X-axis: 1 Jan 2010 – 31 Dec 2025, year labels every 2 years.
 
 Run from project root: python scripts/plot_noaa_water_level_with_predictions.py
 """

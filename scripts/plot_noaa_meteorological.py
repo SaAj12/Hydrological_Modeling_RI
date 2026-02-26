@@ -3,7 +3,7 @@ Plot NOAA meteorological data plus water level with predictions.
 Water level: verified, preliminary, predictions, observed − predicted.
 Met: air temp, wind, pressure, water temp, humidity, visibility.
 Reads from noaa/*.csv. Writes to docs/images/noaa/ and frontend/images/noaa/.
-X-axis: 1 Jan 1950 – 31 Dec 2025, year labels every 10 years (matches discharge chart).
+X-axis: 1 Jan 2010 – 31 Dec 2025, year labels every 2 years.
 
 Run from project root: python scripts/plot_noaa_meteorological.py
 """

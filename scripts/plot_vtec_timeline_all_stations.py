@@ -1,7 +1,7 @@
 """
 Plot VTEC timeline for every station for the Hydrological Modeling GitHub Page.
 Reads vtec_events_<STAID>.csv from docs/vtec_by_usgs_and_noaa, plots only selected warning
-classes, x-axis 1 Jan 1950–31 Dec 2025 (matches discharge chart), year labels every 10 years.
+classes, x-axis 1 Jan 2010–31 Dec 2025, year labels every 2 years.
 Writes PNGs to docs/images/vtec/.
 
 Allowed warning_name (plotted in this order):
@@ -23,7 +23,7 @@ DOCS = os.path.join(PROJECT_ROOT, "docs")
 DEFAULT_INPUT_DIR = os.path.join(DOCS, "vtec_by_usgs_and_noaa")
 DEFAULT_OUTPUT_DIR = os.path.join(DOCS, "images", "vtec")
 
-# Plot ONLY these 7 warning types, in this y-axis order (matches discharge chart era 1950–2025)
+# Plot ONLY these 7 warning types, in this y-axis order
 ALLOWED_WARNING_NAMES = [
     "Severe Thunderstorm Warning",
     "Flash Flood Warning",
@@ -49,7 +49,7 @@ def parse_dt(s):
 
 
 def plot_one(csv_path: str, output_path: str, station_id: str, x_min, x_max) -> bool:
-    """Plot one station's VTEC timeline (filtered classes, x 1950–2025); return True on success."""
+    """Plot one station's VTEC timeline (filtered classes, x 2010–2025); return True on success."""
     try:
         import pandas as pd
         import matplotlib.pyplot as plt
@@ -113,7 +113,7 @@ def plot_one(csv_path: str, output_path: str, station_id: str, x_min, x_max) -> 
 
 def main():
     p = argparse.ArgumentParser(
-        description="Plot VTEC timeline per station (1950–2025, selected warning types)"
+        description="Plot VTEC timeline per station (2010–2025, selected warning types)"
     )
     p.add_argument(
         "--input-dir", "-i", default=DEFAULT_INPUT_DIR,
@@ -123,7 +123,7 @@ def main():
         "--output-dir", "-o", default=DEFAULT_OUTPUT_DIR,
         help="Directory for PNGs (default: docs/images/vtec)",
     )
-    p.add_argument("--x-min", default=None, help="X-axis start (YYYY-MM-DD, default: 1950-01-01)")
+    p.add_argument("--x-min", default=None, help="X-axis start (YYYY-MM-DD, default: 2010-01-01)")
     p.add_argument("--x-max", default=None, help="X-axis end (YYYY-MM-DD, default: 2025-12-31)")
     args = p.parse_args()
 

@@ -1,7 +1,7 @@
 """
 Plot precipitation (GPM IMERG) for each NOAA station.
 Uses nearest USGS pr data from pr_extracted (pr_<STAID>.csv). NOAA stations mapped by lat/lon.
-X-axis: 1 Jan 1950 – 31 Dec 2025, year labels every 10 years (matches discharge chart).
+X-axis: 1 Jan 2010 – 31 Dec 2025, year labels every 2 years.
 Output: docs/images/noaa/precipitation_<noaa_id>.png
 """
 import argparse
