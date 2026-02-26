@@ -8,6 +8,7 @@
   let chartDischarge = null;
   let dischargeData = null;
   let noaaStations = [];
+  let stormsData = { storms: [] };
 
   /** Format station ID as 8-digit text (e.g. 1108000 -> "01108000") */
   function formatStationIdDisplay(id) {
@@ -70,20 +71,74 @@
     },
   };
 
+  function buildStormAnnotations(storms, yBarTop, yBarBottom) {
+    const annotations = {};
+    (storms || []).forEach(function (s, i) {
+      const id = "storm_" + (s.id || i);
+      annotations[id] = {
+        type: "box",
+        xMin: s.startDate,
+        xMax: s.endDate,
+        yMin: yBarBottom,
+        yMax: yBarTop,
+        backgroundColor: "rgba(0,0,0,0.6)",
+        borderColor: "transparent",
+      };
+    });
+    return annotations;
+  }
+
   function drawDischargeChart(dischargeDataArr, stationIdDisplay) {
+    var selectedStormId = (get("storm-select") && get("storm-select").value) || "";
     destroyCharts();
-    const arr = dischargeDataArr || [];
+    var arr = dischargeDataArr || [];
     if (arr.length === 0) return;
     var canvas = get("chart-discharge");
     if (!canvas) return;
     var ctx = canvas.getContext("2d");
     if (!ctx) return;
+
+    var storms = stormsData.storms || [];
+    var selectedStorm = selectedStormId
+      ? storms.find(function (s) { return s.id === selectedStormId; })
+      : null;
+
+    if (selectedStorm) {
+      var startD = selectedStorm.startDate;
+      var endD = selectedStorm.endDate;
+      arr = arr.filter(function (d) {
+        var dStr = (d.date || "").substring(0, 10);
+        return dStr >= startD && dStr <= endD;
+      });
+      if (arr.length === 0) arr = dischargeDataArr || [];
+    }
+
     var dataPoints = arr.map(function (d) {
       return { x: d.date, y: d.value != null ? d.value : null };
     });
+    var yMaxVal = 0;
+    dataPoints.forEach(function (p) {
+      if (p.y != null && p.y > yMaxVal) yMaxVal = p.y;
+    });
+    if (yMaxVal <= 0) yMaxVal = 100;
+    var yBarTop = yMaxVal * 1.02;
+    var yBarBottom = yMaxVal * 0.97;
+
     var titleText = stationIdDisplay
       ? "Discharge (cfs) — Station " + stationIdDisplay
       : "Discharge (cfs)";
+    if (selectedStorm) {
+      titleText += " — " + selectedStorm.displayLabel;
+    }
+
+    var xScaleOpts = { min: "2010-01-01", max: "2025-12-31" };
+    if (selectedStorm) {
+      xScaleOpts.min = selectedStorm.startDate;
+      xScaleOpts.max = selectedStorm.endDate;
+    }
+
+    var annotations = buildStormAnnotations(storms, yBarTop, yBarBottom);
+
     var opts = Object.assign({}, chartOptions, {
       plugins: Object.assign({}, chartOptions.plugins, {
         title: {
@@ -92,8 +147,16 @@
           font: { size: 14 },
           color: "#8b949e",
         },
+        annotation: {
+          annotations: annotations,
+        },
+      }),
+      scales: Object.assign({}, chartOptions.scales, {
+        x: Object.assign({}, chartOptions.scales.x, xScaleOpts),
+        y: Object.assign({}, chartOptions.scales.y, { min: 0 }),
       }),
     });
+
     try {
       chartDischarge = new Chart(ctx, {
         type: "line",
@@ -204,6 +267,36 @@
     img.src = base + "images/noaa/" + idStr + "_water_level_with_predictions.png";
   }
 
+  /** Show meteorological plot for the selected NOAA station only. Uses images/noaa/{id}_meteorological.png */
+  function updateMeteorologicalFigureForStation(noaaId) {
+    var wrap = get("meteorological-wrap");
+    var img = get("meteorological-figure");
+    var noData = get("meteorological-no-data");
+    if (!wrap || !img || !noData) return;
+    wrap.classList.remove("hidden");
+    var base = getBasePath();
+    img.src = "";
+    img.classList.add("hidden");
+    if (!noaaId) {
+      noData.classList.remove("hidden");
+      noData.textContent = "No meteorological data available for this station.";
+      return;
+    }
+    var idStr = String(noaaId);
+    noData.classList.add("hidden");
+    img.onerror = function () {
+      img.classList.add("hidden");
+      img.removeAttribute("src");
+      noData.classList.remove("hidden");
+      noData.textContent = "No meteorological data available for this station.";
+    };
+    img.onload = function () {
+      img.classList.remove("hidden");
+      noData.classList.add("hidden");
+    };
+    img.src = base + "images/noaa/" + idStr + "_meteorological.png";
+  }
+
   /** Show precipitation for the selected NOAA station only. Uses images/noaa/precipitation_{id}.png */
   function updatePrecipitationFigure(noaaId) {
     var wrap = get("precipitation-wrap");
@@ -245,10 +338,12 @@
     get("discharge-chart-wrap").classList.add("hidden");
     get("vtec-figure-wrap").classList.remove("hidden");
     get("water-level-wrap").classList.remove("hidden");
+    get("meteorological-wrap").classList.remove("hidden");
     get("precipitation-wrap").classList.remove("hidden");
     destroyCharts();
     updateVtecFigure(s && s.id ? s.id : null);
     updateWaterLevelFigureForStation(s && s.id ? s.id : null);
+    updateMeteorologicalFigureForStation(s && s.id ? s.id : null);
     updatePrecipitationFigure(s && s.id ? s.id : null);
   }
 
@@ -263,6 +358,12 @@
       var waterImg = get("water-level-figure");
       if (waterImg) waterImg.src = "";
     }
+    var metWrap = get("meteorological-wrap");
+    if (metWrap) {
+      metWrap.classList.add("hidden");
+      var metImg = get("meteorological-figure");
+      if (metImg) metImg.src = "";
+    }
     get("precipitation-wrap").classList.add("hidden");
     var meta = (lat != null && lon != null)
       ? "Lat " + Number(lat).toFixed(4) + "°, Lon " + Number(lon).toFixed(4) + "°"
@@ -272,6 +373,8 @@
     var idDisplay = formatStationIdDisplay(stationId);
     var title = displayName ? displayName + " (" + idDisplay + ")" : idDisplay;
     showPanel({ name: title }, { meta: meta });
+    var chartTitleEl = get("discharge-chart-title");
+    if (chartTitleEl) chartTitleEl.textContent = "Discharge (cfs, Cubic feet per second) — Station " + idDisplay;
     updateVtecFigure(stationId);
 
     if (!dischargeData || !dischargeData.series) {
@@ -343,6 +446,26 @@
       console.error("Failed to load discharge data:", e);
       document.getElementById("api-error-banner").classList.remove("hidden");
       return { stations: [], series: {} };
+    }
+  }
+
+  async function loadStormsData() {
+    if (stormsData.storms && stormsData.storms.length > 0) return stormsData;
+    var base = "";
+    var path = location.pathname || "";
+    if (path && path !== "/" && path !== "/index.html") {
+      var segs = path.split("/").filter(Boolean);
+      if (segs.length > 0) base = "/" + segs[0] + "/";
+    }
+    var dataUrl = base + "data/storms_data.json";
+    try {
+      var res = await fetch(dataUrl);
+      if (!res.ok) return stormsData;
+      stormsData = await res.json();
+      return stormsData;
+    } catch (e) {
+      console.warn("Failed to load storms data:", e);
+      return stormsData;
     }
   }
 
@@ -497,8 +620,30 @@
 
   async function init() {
     dischargeData = await loadDischargeData();
+    stormsData = await loadStormsData();
     if (dischargeData && dischargeData.stations && dischargeData.stations.length > 0) {
       document.getElementById("api-error-banner").classList.add("hidden");
+    }
+    var stormSelect = get("storm-select");
+    if (stormSelect && stormsData.storms && stormsData.storms.length > 0) {
+      stormsData.storms.forEach(function (s) {
+        var opt = document.createElement("option");
+        opt.value = s.id;
+        opt.textContent = s.displayLabel;
+        stormSelect.appendChild(opt);
+      });
+      stormSelect.addEventListener("change", function () {
+        var dischargeWrap = get("discharge-chart-wrap");
+        if (dischargeWrap && !dischargeWrap.classList.contains("hidden")) {
+          var v = get("discharge-select").value;
+          if (v) {
+            var sid = formatStationIdDisplay(v);
+            fetchStationSeries(v).then(function (series) {
+              if (series.length > 0) drawDischargeChart(series, sid);
+            });
+          }
+        }
+      });
     }
     await initMap();
   }

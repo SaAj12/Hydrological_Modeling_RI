@@ -134,8 +134,30 @@ body {
 .panel .meta a:hover {
   text-decoration: underline;
 }
+.storm-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.storm-controls label {
+  font-size: 0.85rem;
+  color: #8b949e;
+  white-space: nowrap;
+}
+.storm-controls select {
+  padding: 0.3rem 0.5rem;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  background: #0d1117;
+  color: #e6edf3;
+  font-size: 0.85rem;
+  min-width: 12rem;
+  max-width: 280px;
+}
 .chart-wrap.hidden,
 #water-level-wrap.hidden,
+#meteorological-wrap.hidden,
 #precipitation-wrap.hidden {
   display: none !important;
 }
@@ -171,6 +193,7 @@ body {
 }
 .vtec-wrap,
 #water-level-wrap,
+#meteorological-wrap,
 #precipitation-wrap {
   margin-top: 1.25rem;
   min-height: 220px;
@@ -181,6 +204,7 @@ body {
 }
 .vtec-wrap h3,
 #water-level-wrap h3,
+#meteorological-wrap h3,
 #precipitation-wrap h3 {
   flex-shrink: 0;
   text-align: left;
@@ -190,6 +214,7 @@ body {
 }
 .vtec-wrap .vtec-img,
 #water-level-wrap .vtec-img,
+#meteorological-wrap .vtec-img,
 #precipitation-wrap .vtec-img {
   max-width: 100%;
   max-height: 100%;
