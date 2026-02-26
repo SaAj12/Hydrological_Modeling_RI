@@ -1,7 +1,8 @@
 """
 Plot precipitation (GPM IMERG) for each NOAA station.
 Uses nearest USGS pr data from pr_extracted (pr_<STAID>.csv). NOAA stations mapped by lat/lon.
-X-axis: 1 Jan 2010 – 31 Dec 2025. Output: docs/images/noaa/precipitation_<noaa_id>.png
+X-axis: 1 Jan 1950 – 31 Dec 2025, year labels every 10 years (matches discharge chart).
+Output: docs/images/noaa/precipitation_<noaa_id>.png
 """
 import argparse
 import csv
@@ -15,7 +16,8 @@ _SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = _SCRIPT_DIR.parent
 NOAA_CSV = PROJECT_ROOT / "noaa" / "noaa_stations_in_domain.csv"
 PR_EXTRACTED = PROJECT_ROOT / "pr_extracted"
-# X-axis uses data date range (pr data may be 1998–1999 or 2010–2025)
+sys.path.insert(0, str(_SCRIPT_DIR))
+from chart_axis_constants import FIG_SIZE, apply_chart_xaxis
 
 
 def load_noaa_stations(path):
@@ -81,19 +83,16 @@ def plot_one(pr_csv_path, out_path, station_id):
     pr_col = "pr_mm_per_day" if "pr_mm_per_day" in df.columns else df.columns[-1]
     df["date"] = pd.to_datetime(df["date"])
     df = df.sort_values("date")
-    xmin, xmax = df["date"].min(), df["date"].max()
-    if pd.isna(xmin) or pd.isna(xmax):
+    if df.empty:
         return False
 
-    fig, ax = plt.subplots(figsize=(12, 4))
+    fig, ax = plt.subplots(figsize=FIG_SIZE)
     ax.plot(df["date"], df[pr_col], color="steelblue", linewidth=0.5, alpha=0.9)
     ax.fill_between(df["date"], df[pr_col], alpha=0.3, color="steelblue")
     ax.set_xlabel("")
     ax.set_ylabel("mm/day")
     ax.set_title(f"Precipitation (GPM IMERG) — Station {station_id}", fontsize=12)
-    ax.set_xlim(xmin, xmax)
-    ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
-    ax.xaxis.set_major_locator(mdates.YearLocator(5))
+    apply_chart_xaxis(ax, set_limits=True)
     ax.grid(True, alpha=0.3)
     plt.xticks(rotation=0)
     plt.tight_layout()

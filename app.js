@@ -57,11 +57,30 @@
     },
   };
 
-  function drawDischargeChart(dischargeDataArr) {
+  function formatStationIdDisplay(id) {
+    if (id == null || id === "") return "";
+    const s = String(id).trim();
+    return s ? s.padStart(8, "0") : "";
+  }
+
+  function drawDischargeChart(dischargeDataArr, stationIdDisplay) {
     destroyCharts();
     const arr = dischargeDataArr || [];
     const labels = arr.map((d) => d.date);
     const values = arr.map((d) => (d.value != null ? d.value : null));
+    const titleText = stationIdDisplay
+      ? "Discharge (cfs) — Station " + stationIdDisplay
+      : "Discharge (cfs)";
+    const opts = Object.assign({}, chartOptions, {
+      plugins: Object.assign({}, chartOptions.plugins, {
+        title: {
+          display: true,
+          text: titleText,
+          font: { size: 14 },
+          color: "#8b949e",
+        },
+      }),
+    });
     const ctx = get("chart-discharge").getContext("2d");
     chartDischarge = new Chart(ctx, {
       type: "line",
@@ -76,7 +95,7 @@
           tension: 0.1,
         }],
       },
-      options: chartOptions,
+      options: opts,
     });
   }
 
@@ -107,7 +126,7 @@
       destroyCharts();
       return;
     }
-    drawDischargeChart(series);
+    drawDischargeChart(series, formatStationIdDisplay(stationId));
   }
 
   async function loadDischargeData() {
@@ -199,7 +218,7 @@
         marker.on("click", async () => {
           loadDischargeStation(sid, s.lat, s.lon, name !== sid ? name : null);
           const series = await fetchStationSeries(sid);
-          if (series.length > 0) drawDischargeChart(series);
+          if (series.length > 0) drawDischargeChart(series, formatStationIdDisplay(sid));
         });
         dischargeLayer.addLayer(marker);
       }
@@ -221,7 +240,7 @@
       const s = stations.find((st) => st.id === v);
       loadDischargeStation(v, s ? s.lat : null, s ? s.lon : null, displayName || null);
       const series = await fetchStationSeries(v);
-      if (series.length > 0) drawDischargeChart(series);
+      if (series.length > 0) drawDischargeChart(series, formatStationIdDisplay(v));
     });
   }
 

@@ -1,9 +1,8 @@
 """
 Plot VTEC timeline for every station for the Hydrological Modeling GitHub Page.
 Reads vtec_events_<STAID>.csv from docs/vtec_by_usgs_and_noaa, plots only selected warning
-classes, x-axis 1 Jan 2010–31 Dec 2025, y-axis warning_name. Writes PNGs to
-docs/images/vtec/ so https://saaj12.github.io/Hydrological-Modeling/ can show
-each figure below the discharge chart for the corresponding station.
+classes, x-axis 1 Jan 1950–31 Dec 2025 (matches discharge chart), year labels every 10 years.
+Writes PNGs to docs/images/vtec/.
 
 Allowed warning_name (plotted in this order):
   Severe Thunderstorm Warning, Flash Flood Warning, Flood Warning,
@@ -35,8 +34,7 @@ ALLOWED_WARNING_NAMES = [
     "Winter Storm Warning",
 ]
 ALLOWED_SET = frozenset(ALLOWED_WARNING_NAMES)
-X_MIN = datetime(2010, 1, 1)
-X_MAX = datetime(2025, 12, 31, 23, 59, 59)  # End of 31 Dec 2025
+from chart_axis_constants import X_MIN, X_MAX, FIG_SIZE, apply_chart_xaxis
 
 
 def parse_dt(s):
@@ -51,7 +49,7 @@ def parse_dt(s):
 
 
 def plot_one(csv_path: str, output_path: str, station_id: str, x_min, x_max) -> bool:
-    """Plot one station's VTEC timeline (filtered classes, x 2010–2025); return True on success."""
+    """Plot one station's VTEC timeline (filtered classes, x 1950–2025); return True on success."""
     try:
         import pandas as pd
         import matplotlib.pyplot as plt
@@ -83,7 +81,7 @@ def plot_one(csv_path: str, output_path: str, station_id: str, x_min, x_max) -> 
     df["width"] = (df["expired_dt"] - df["issued_dt"]).dt.total_seconds() / (24 * 3600)
     df["left"] = df["issued_dt"]
 
-    fig, ax = plt.subplots(figsize=(14, max(6, len(name_order) * 0.5)))
+    fig, ax = plt.subplots(figsize=FIG_SIZE)
     for _, row in df.iterrows():
         ax.barh(
             row["y"],
@@ -102,11 +100,8 @@ def plot_one(csv_path: str, output_path: str, station_id: str, x_min, x_max) -> 
     ax.set_ylabel("")
     ax.set_title(f"VTEC events — Station {station_id}", fontsize=14)
     ax.xaxis_date()
-    # Fixed x-axis: x_min – x_max (default ends 31 Dec 2025)
     ax.set_xlim(mdates.date2num(x_min), mdates.date2num(x_max))
-    # Same style as discharge: years only, 10-year increment (1950, 1960, 1970, ...)
-    ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
-    ax.xaxis.set_major_locator(mdates.YearLocator(5))
+    apply_chart_xaxis(ax, set_limits=False)  # limits set above; apply 10-year labels
     ax.tick_params(axis="both", labelsize=14)
     plt.xticks(rotation=0)
     plt.tight_layout()
@@ -118,7 +113,7 @@ def plot_one(csv_path: str, output_path: str, station_id: str, x_min, x_max) -> 
 
 def main():
     p = argparse.ArgumentParser(
-        description="Plot VTEC timeline per station for GitHub Page (2010–2025, selected warning types)"
+        description="Plot VTEC timeline per station (1950–2025, selected warning types)"
     )
     p.add_argument(
         "--input-dir", "-i", default=DEFAULT_INPUT_DIR,
@@ -128,7 +123,7 @@ def main():
         "--output-dir", "-o", default=DEFAULT_OUTPUT_DIR,
         help="Directory for PNGs (default: docs/images/vtec)",
     )
-    p.add_argument("--x-min", default=None, help="X-axis start (YYYY-MM-DD, default: 2010-01-01)")
+    p.add_argument("--x-min", default=None, help="X-axis start (YYYY-MM-DD, default: 1950-01-01)")
     p.add_argument("--x-max", default=None, help="X-axis end (YYYY-MM-DD, default: 2025-12-31)")
     args = p.parse_args()
 

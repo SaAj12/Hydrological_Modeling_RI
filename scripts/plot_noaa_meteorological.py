@@ -3,7 +3,7 @@ Plot NOAA meteorological data plus water level with predictions.
 Water level: verified, preliminary, predictions, observed − predicted.
 Met: air temp, wind, pressure, water temp, humidity, visibility.
 Reads from noaa/*.csv. Writes to docs/images/noaa/ and frontend/images/noaa/.
-X-axis: 1 Jan 2010 – 31 Dec 2025.
+X-axis: 1 Jan 1950 – 31 Dec 2025, year labels every 10 years (matches discharge chart).
 
 Run from project root: python scripts/plot_noaa_meteorological.py
 """
@@ -15,8 +15,7 @@ from datetime import datetime
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(_SCRIPT_DIR)
 DEFAULT_INPUT_DIR = os.path.join(PROJECT_ROOT, "noaa")
-X_MIN = datetime(2010, 1, 1)
-X_MAX = datetime(2025, 12, 31)
+from chart_axis_constants import FIG_WIDTH, FIG_HEIGHT, apply_chart_xaxis
 
 # Product -> (column candidates, y-label, title)
 PRODUCT_CONFIG = {
@@ -204,7 +203,7 @@ def run_plot(input_dir, output_dir, station):
     n = len(panels)
     ncols = 2
     nrows = (n + ncols - 1) // ncols
-    fig, axes = plt.subplots(nrows, ncols, figsize=(12, 3 * nrows), squeeze=False)
+    fig, axes = plt.subplots(nrows, ncols, figsize=(FIG_WIDTH, FIG_HEIGHT * nrows), squeeze=False)
     lw = 0.35
 
     for idx, panel in enumerate(panels):
@@ -228,9 +227,7 @@ def run_plot(input_dir, output_dir, station):
             ax.set_title(cfg[2], fontsize=10)
             ax.set_ylabel(cfg[1], fontsize=9)
         ax.grid(True, alpha=0.3)
-        ax.set_xlim(X_MIN, X_MAX)
-        ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
-        ax.xaxis.set_major_locator(mdates.YearLocator(5))
+        apply_chart_xaxis(ax, set_limits=True)
 
     for idx in range(len(panels), nrows * ncols):
         axes[idx // ncols, idx % ncols].set_visible(False)

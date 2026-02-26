@@ -1,7 +1,7 @@
 """
 Plot water level: Predictions, Verified observed, Preliminary observed, Observed - Predicted.
 Reads from PROJECT_ROOT/noaa/ (or --input-dir). Writes to docs/images/noaa/ and frontend/images/noaa/.
-X-axis: 1 Jan 2010 – 31 Dec 2025.
+X-axis: 1 Jan 1950 – 31 Dec 2025, year labels every 10 years (matches discharge chart).
 
 Run from project root: python scripts/plot_noaa_water_level_with_predictions.py
 """
@@ -13,8 +13,7 @@ from datetime import datetime
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(_SCRIPT_DIR)
 DEFAULT_INPUT_DIR = os.path.join(PROJECT_ROOT, "noaa")
-X_MIN = datetime(2010, 1, 1)
-X_MAX = datetime(2025, 12, 31)
+from chart_axis_constants import FIG_SIZE, apply_chart_xaxis
 
 
 def parse_dt(s):
@@ -116,7 +115,7 @@ def run_plot(input_dir, output_dir, station):
             res_dt = merged["dt"].values
             res_val = (merged["obs"] - merged["pred"]).values
 
-    fig, ax = plt.subplots(figsize=(12, 4))
+    fig, ax = plt.subplots(figsize=FIG_SIZE)
     lw = 0.35
     if verified_dt:
         ax.plot(verified_dt, verified_val, color="steelblue", linewidth=lw, alpha=0.9, label="Verified")
@@ -132,9 +131,7 @@ def run_plot(input_dir, output_dir, station):
     ax.set_title(f"Station {station} — Water level (m MLLW)", fontsize=12)
     ax.legend(loc="upper right", fontsize=8)
     ax.grid(True, alpha=0.3)
-    ax.set_xlim(X_MIN, X_MAX)
-    ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
-    ax.xaxis.set_major_locator(mdates.YearLocator(5))
+    apply_chart_xaxis(ax, set_limits=True)
     plt.xticks(rotation=0)
     plt.tight_layout()
     out_path = os.path.join(output_dir, f"{station}_water_level_with_predictions.png")

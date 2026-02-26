@@ -70,7 +70,7 @@
     },
   };
 
-  function drawDischargeChart(dischargeDataArr) {
+  function drawDischargeChart(dischargeDataArr, stationIdDisplay) {
     destroyCharts();
     const arr = dischargeDataArr || [];
     if (arr.length === 0) return;
@@ -80,6 +80,19 @@
     if (!ctx) return;
     var dataPoints = arr.map(function (d) {
       return { x: d.date, y: d.value != null ? d.value : null };
+    });
+    var titleText = stationIdDisplay
+      ? "Discharge (cfs) — Station " + stationIdDisplay
+      : "Discharge (cfs)";
+    var opts = Object.assign({}, chartOptions, {
+      plugins: Object.assign({}, chartOptions.plugins, {
+        title: {
+          display: true,
+          text: titleText,
+          font: { size: 14 },
+          color: "#8b949e",
+        },
+      }),
     });
     try {
       chartDischarge = new Chart(ctx, {
@@ -95,7 +108,7 @@
             borderWidth: 2.5,
           }],
         },
-        options: chartOptions,
+        options: opts,
       });
       requestAnimationFrame(function () {
         if (chartDischarge) chartDischarge.resize();
@@ -266,7 +279,7 @@
     }
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
-        drawDischargeChart(series);
+        drawDischargeChart(series, idDisplay);
       });
     });
   }
@@ -420,7 +433,7 @@
           get("noaa-select").value = "";
           loadDischargeStation(sid, s.lat, s.lon, name !== sid ? name : null);
           var series = await fetchStationSeries(sid);
-          if (series.length > 0) drawDischargeChart(series);
+          if (series.length > 0) drawDischargeChart(series, formatStationIdDisplay(sid));
         });
         dischargeLayer.addLayer(marker);
       }
@@ -443,7 +456,7 @@
       var s = stations.find(function (st) { return st.id === v; });
       loadDischargeStation(v, s ? s.lat : null, s ? s.lon : null, displayName || null);
       var series = await fetchStationSeries(v);
-      if (series.length > 0) drawDischargeChart(series);
+      if (series.length > 0) drawDischargeChart(series, formatStationIdDisplay(v));
     });
 
     var noaaSelect = get("noaa-select");
