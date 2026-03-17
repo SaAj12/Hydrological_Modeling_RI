@@ -203,8 +203,9 @@
     if (titleEl) titleEl.textContent = "Water level (m MLLW) — Station " + noaaId;
   }
 
-  var MET_PRODUCTS = ["air_pressure", "air_temperature", "water_temperature", "wind", "humidity", "visibility"];
-  var MET_TITLES = { air_pressure: "Air pressure", air_temperature: "Air temperature", water_temperature: "Water temperature", wind: "Wind", humidity: "Humidity", visibility: "Visibility" };
+  // Only include products we want to show on the GitHub Pages UI
+  var MET_PRODUCTS = ["air_pressure", "air_temperature", "water_temperature"];
+  var MET_TITLES = { air_pressure: "Air pressure", air_temperature: "Air temperature", water_temperature: "Water temperature" };
 
   function updateMetProductFigure(noaaId, product) {
     var wrap = get(product + "-wrap");
