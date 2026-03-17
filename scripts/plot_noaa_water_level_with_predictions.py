@@ -131,7 +131,8 @@ def run_plot(input_dir, output_dir, station):
         res_dt, res_val = load_observed_minus_predicted(omp_path)
         if res_dt is None:
             res_dt, res_val = [], []
-    if (not res_dt or len(res_dt) == 0) and pred_dt is not None and len(pred_dt) > 0:
+    # res_dt/res_val may be numpy arrays; avoid ambiguous truth-value checks
+    if (res_dt is None or len(res_dt) == 0) and pred_dt is not None and len(pred_dt) > 0:
         obs_df = pd.DataFrame({"dt": pd.to_datetime(wl_dt), "obs": wl_val})
         pred_df = pd.DataFrame({"dt": pd.to_datetime(pred_dt), "pred": pred_val})
         merged = obs_df.merge(pred_df, on="dt", how="inner")

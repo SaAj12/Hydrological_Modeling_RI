@@ -179,9 +179,9 @@
   }
 
   function updateWaterLevelFigureForStation(noaaId) {
-    const wrap = get("water-level-wrap");
-    const img = get("water-level-figure");
-    const noData = get("water-level-no-data");
+    var wrap = get("water-level-wrap");
+    var img = get("water-level-figure");
+    var noData = get("water-level-no-data");
     if (!wrap || !img || !noData) return;
     wrap.classList.remove("hidden");
     if (!noaaId) {
