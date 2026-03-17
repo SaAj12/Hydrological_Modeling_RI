@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>USGS Analysis — Hydrological Modeling</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌊</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1>USGS Analysis</h1>
+      <p class="subtitle">
+        Static analysis figures for USGS discharge stations (FDC, POT, seasonality, extremes).
+        <a href="./">Back to map</a>
+      </p>
+      <div class="search-bar">
+        <label>USGS stations:</label>
+        <select id="discharge-select">
+          <option value="">— select station —</option>
+        </select>
+      </div>
+    </header>
+
+    <main class="main" style="display:block">
+      <section class="panel" style="max-width: 980px; margin: 0 auto;">
+        <div id="panel-placeholder" class="placeholder">
+          Select a USGS station to view analysis figures.
+        </div>
+        <div id="panel-content" class="content hidden">
+          <h2 id="point-title">Station</h2>
+          <p id="point-meta" class="meta"></p>
+
+          <div class="charts">
+            <div id="usgs-fdc-wrap" class="chart-wrap vtec-wrap">
+              <h3 id="usgs-fdc-title">Flow duration curve (FDC) — Station —</h3>
+              <img id="usgs-fdc-figure" src="" alt="Flow duration curve" class="vtec-img" />
+              <p id="usgs-fdc-no-data" class="vtec-no-data hidden">No FDC figure available.</p>
+            </div>
+
+            <div id="usgs-pot-annual-wrap" class="chart-wrap vtec-wrap">
+              <h3 id="usgs-pot-annual-title">POT counts (annual) — Station —</h3>
+              <img id="usgs-pot-annual-figure" src="" alt="POT annual counts" class="vtec-img" />
+              <p id="usgs-pot-annual-no-data" class="vtec-no-data hidden">No POT annual figure available.</p>
+            </div>
+
+            <div id="usgs-pot-seasonal-wrap" class="chart-wrap vtec-wrap">
+              <h3 id="usgs-pot-seasonal-title">POT counts (seasonal) — Station —</h3>
+              <img id="usgs-pot-seasonal-figure" src="" alt="POT seasonal counts" class="vtec-img" />
+              <p id="usgs-pot-seasonal-no-data" class="vtec-no-data hidden">No POT seasonal figure available.</p>
+            </div>
+
+            <div id="usgs-seasonality-wrap" class="chart-wrap vtec-wrap">
+              <h3 id="usgs-seasonality-title">Flood seasonality (monthly) — Station —</h3>
+              <img id="usgs-seasonality-figure" src="" alt="Flood seasonality" class="vtec-img" />
+              <p id="usgs-seasonality-no-data" class="vtec-no-data hidden">No seasonality figure available.</p>
+            </div>
+
+            <div id="usgs-extremes-wrap" class="chart-wrap vtec-wrap">
+              <h3 id="usgs-extremes-title">Large floods (top-N) — Station —</h3>
+              <img id="usgs-extremes-figure" src="" alt="Large floods" class="vtec-img" />
+              <p id="usgs-extremes-no-data" class="vtec-no-data hidden">No extremes figure available.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      Brown University - DEEP Department
+    </footer>
+  </div>
+
+  <script src="js/usgs_analysis.js"></script>
+</body>
+</html>
