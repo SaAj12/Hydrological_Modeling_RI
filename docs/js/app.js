@@ -543,7 +543,9 @@
       sensorsList.forEach(function (s, idx) {
         var opt = document.createElement("option");
         opt.value = String(idx);
-        opt.textContent = s && s.name ? String(s.name) : ("Sensor " + (idx + 1));
+        var name = (s && s.name) ? String(s.name) : ("Sensor " + (idx + 1));
+        var st = (s && s.sensorType) ? String(s.sensorType) : "";
+        opt.textContent = st ? (name + " — " + st) : name;
         sensorsSelect.appendChild(opt);
       });
       sensorsSelect.addEventListener("change", function () {
