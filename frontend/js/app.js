@@ -284,6 +284,8 @@
   }
 
   function loadNoaaStation(s) {
+    var sensorsSelect = get("sensors-select");
+    if (sensorsSelect) sensorsSelect.value = "";
     get("discharge-select").value = "";
     var meta = (s && s.lat != null && s.lon != null)
       ? "Lat " + Number(s.lat).toFixed(4) + "°, Lon " + Number(s.lon).toFixed(4) + "° — NOAA tide/water level"
@@ -303,7 +305,41 @@
     updatePrecipitationFigure(s && s.id ? s.id : null);
   }
 
+  function loadSensorStation(sensor, sensorIndex) {
+    var sensorsSelect = get("sensors-select");
+    if (sensorsSelect) sensorsSelect.value = sensorIndex != null ? String(sensorIndex) : "";
+    get("discharge-select").value = "";
+    get("noaa-select").value = "";
+
+    var name = (sensor && sensor.name) ? String(sensor.name) : "Sensor";
+    var meta = "";
+    if (sensor && sensor.lat != null && sensor.lon != null) {
+      meta = "Lat " + Number(sensor.lat).toFixed(4) + "°, Lon " + Number(sensor.lon).toFixed(4) + "°";
+    }
+    if (sensor && sensor.sensorType) {
+      meta = (meta ? (meta + " — ") : "") + "Type: " + String(sensor.sensorType);
+    }
+    showPanel({ name: name }, { meta: meta });
+
+    // Hide all chart/image sections for sensors (no plots wired yet)
+    var dischargeWrap = get("discharge-chart-wrap");
+    if (dischargeWrap) dischargeWrap.classList.add("hidden");
+    var vtecWrap = get("vtec-figure-wrap");
+    if (vtecWrap) vtecWrap.classList.add("hidden");
+    var waterWrap = get("water-level-wrap");
+    if (waterWrap) waterWrap.classList.add("hidden");
+    MET_PRODUCTS.forEach(function (p) {
+      var w = get(p + "-wrap");
+      if (w) w.classList.add("hidden");
+    });
+    var prWrap = get("precipitation-wrap");
+    if (prWrap) prWrap.classList.add("hidden");
+    destroyCharts();
+  }
+
   function loadDischargeStation(stationId, lat, lon, displayName) {
+    var sensorsSelect = get("sensors-select");
+    if (sensorsSelect) sensorsSelect.value = "";
     get("noaa-select").value = "";
     get("discharge-select").value = stationId || "";
     get("discharge-chart-wrap").classList.remove("hidden");
@@ -502,6 +538,25 @@
     });
 
     var sensorsList = await loadSensors();
+    var sensorsSelect = get("sensors-select");
+    if (sensorsSelect) {
+      sensorsList.forEach(function (s, idx) {
+        var opt = document.createElement("option");
+        opt.value = String(idx);
+        opt.textContent = s && s.name ? String(s.name) : ("Sensor " + (idx + 1));
+        sensorsSelect.appendChild(opt);
+      });
+      sensorsSelect.addEventListener("change", function () {
+        var v = this.value;
+        if (v === "") return;
+        var idx = parseInt(v, 10);
+        if (!Number.isFinite(idx) || idx < 0 || idx >= sensorsList.length) return;
+        loadSensorStation(sensorsList[idx], idx);
+        if (sensorsList[idx] && sensorsList[idx].lat != null && sensorsList[idx].lon != null) {
+          map.setView([sensorsList[idx].lat, sensorsList[idx].lon], 12);
+        }
+      });
+    }
     sensorsList.forEach(function (s) {
       if (s.lat == null || s.lon == null) return;
       var marker = L.circleMarker([s.lat, s.lon], {
@@ -512,6 +567,11 @@
         fillOpacity: 0.9,
       });
       marker.bindTooltip("Sensor: " + (s.name || ""), { permanent: false });
+      marker.on("click", function () {
+        var idx = sensorsList.indexOf(s);
+        loadSensorStation(s, idx >= 0 ? idx : null);
+        if (sensorsSelect) sensorsSelect.value = idx >= 0 ? String(idx) : "";
+      });
       sensorsLayer.addLayer(marker);
     });
 
