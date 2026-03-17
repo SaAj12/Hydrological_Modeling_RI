@@ -67,7 +67,7 @@ B) POT Flood Frequency (counts)
          - Use 14 days between peaks; within a cluster keep the maximum-Q day.
      - Count events:
        - Annual counts by water year or calendar year (pick one and keep consistent site-wide).
-       - Seasonal counts (OND, JFM, AMJ, JAS or DJF/MAM/JJA/SON).
+       - Seasonal counts (DJF, MAM, JJA, SON).
    - Outputs:
      - pot_counts_annual_<STAID8>.png
      - pot_counts_seasonal_<STAID8>.png

@@ -40,6 +40,14 @@ body {
   font-size: 0.875rem;
   color: #8b949e;
 }
+.subtitle a {
+  color: #c9d1d9;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.subtitle a:hover {
+  color: #e6edf3;
+}
 .search-bar {
   display: flex;
   align-items: center;
