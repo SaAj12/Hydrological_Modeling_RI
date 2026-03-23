@@ -69,6 +69,8 @@
     wireFigure("usgs-seasonality-figure", "usgs-seasonality-no-data", base + "images/usgs_analysis/seasonality_monthly_" + id8 + ".png");
     wireFigure("usgs-extremes-figure", "usgs-extremes-no-data", base + "images/usgs_analysis/extremes_topN_" + id8 + ".png");
     wireFigure("usgs-teleconn-figure", "usgs-teleconn-no-data", base + "images/usgs_analysis/teleconn_counts_" + id8 + ".png");
+    wireFigure("usgs-teleconn-seasonal-figure", "usgs-teleconn-seasonal-no-data", base + "images/usgs_analysis/teleconn_counts_seasonal_" + id8 + ".png");
+    wireFigure("usgs-teleconn-annual-max-figure", "usgs-teleconn-annual-max-no-data", base + "images/usgs_analysis/teleconn_annual_max_" + id8 + ".png");
     wireFigure("usgs-teleconn-summary-figure", "usgs-teleconn-summary-no-data", base + "images/usgs_analysis/teleconn_counts_summary_" + id8 + ".png");
 
     const setTitle = function (elId, text) { const el = get(elId); if (el) el.textContent = text; };
@@ -77,6 +79,8 @@
     setTitle("usgs-seasonality-title", "Flood seasonality (monthly) — Station " + id8);
     setTitle("usgs-extremes-title", "Large floods (top-N) — Station " + id8);
     setTitle("usgs-teleconn-title", "Teleconnections (indices vs annual POT count) — Station " + id8);
+    setTitle("usgs-teleconn-seasonal-title", "Teleconnections (indices vs seasonal POT count) — Station " + id8);
+    setTitle("usgs-teleconn-annual-max-title", "Teleconnections (indices vs annual max discharge) — Station " + id8);
     setTitle("usgs-teleconn-summary-title", "Teleconnections summary — Station " + id8);
   }
 

@@ -7,6 +7,10 @@ Outputs (per station, both frontend/ and docs/):
   - pot_counts_seasonal_<STAID8>.png
   - seasonality_monthly_<STAID8>.png
   - extremes_topN_<STAID8>.png
+  - teleconn_counts_<STAID8>.png
+  - teleconn_counts_seasonal_<STAID8>.png
+  - teleconn_annual_max_<STAID8>.png
+  - teleconn_counts_summary_<STAID8>.png
 
 Design decisions (from usgs_analysis_plan.txt):
   - POT threshold: target-rate method (≈2 events/year)
@@ -225,6 +229,22 @@ def seasonal_counts(events_df):
     df["season"] = df["event_date"].dt.month.astype(int).map(_season_label)
     out = df.groupby(["year", "season"]).size().reset_index(name="count")
     return out
+
+
+def annual_max_by_year(df_window):
+    import pandas as pd
+
+    if df_window is None or df_window.empty:
+        return pd.Series(dtype="float64")
+    d = df_window.dropna(subset=["date", "value"]).copy()
+    if d.empty:
+        return pd.Series(dtype="float64")
+    d["year"] = d["date"].dt.year.astype(int)
+    idx = d.groupby("year")["value"].idxmax()
+    peaks = d.loc[idx, ["year", "value"]].copy()
+    if peaks.empty:
+        return pd.Series(dtype="float64")
+    return peaks.set_index("year")["value"].sort_index()
 
 
 def choose_threshold_target_rate(df_window, cfg: PotConfig):
@@ -537,6 +557,172 @@ def plot_teleconn_counts(annual_counts_series, clim_annual_df, out_path, staid8)
     return True
 
 
+def plot_teleconn_counts_seasonal(seasonal_counts_df, clim_seasonal_df, out_path, staid8):
+    """
+    Multi-panel scatter: seasonal POT counts vs seasonal mean climate indices.
+    """
+    import numpy as np
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    if clim_seasonal_df is None or clim_seasonal_df.empty:
+        return False
+    if seasonal_counts_df is None or seasonal_counts_df.empty:
+        return False
+
+    d = clim_seasonal_df.copy()
+    d = d[(d["year"] >= X_MIN.year) & (d["year"] <= X_MAX.year)].copy()
+    if d.empty:
+        return False
+
+    sc = seasonal_counts_df.copy()
+    sc = sc[(sc["year"] >= X_MIN.year) & (sc["year"] <= X_MAX.year)].copy()
+    if sc.empty:
+        return False
+    sc["key"] = sc["year"].astype(int).astype(str) + "|" + sc["season"].astype(str)
+    sc_map = {k: int(v) for k, v in zip(sc["key"], sc["count"])}
+    d["key"] = d["year"].astype(int).astype(str) + "|" + d["season"].astype(str)
+    d["pot_count_seasonal"] = d["key"].map(lambda k: sc_map.get(k, 0))
+
+    cols = [(c, label) for c, label in CLIMATE_INDEX_COLS if c in d.columns]
+    if not cols:
+        return False
+
+    season_colors = {"DJF": "#58a6ff", "MAM": "#3fb950", "JJA": "#d29922", "SON": "#f85149"}
+    season_order = ["DJF", "MAM", "JJA", "SON"]
+
+    n = len(cols)
+    ncols = 4
+    nrows = int(np.ceil(n / ncols))
+    fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(FIG_WIDTH, FIG_HEIGHT * max(1, nrows)))
+    if nrows == 1:
+        axes = np.array([axes])
+    axes = axes.reshape(nrows, ncols)
+
+    for i, (c, label) in enumerate(cols):
+        r = i // ncols
+        k = i % ncols
+        ax = axes[r, k]
+        sub = d[["pot_count_seasonal", c, "season"]].dropna()
+        x = sub[c].astype(float).values
+        y = sub["pot_count_seasonal"].astype(float).values
+        if x.size == 0:
+            ax.axis("off")
+            continue
+
+        for seas in season_order:
+            ssub = sub[sub["season"] == seas]
+            if ssub.empty:
+                continue
+            ax.scatter(
+                ssub[c].astype(float).values,
+                ssub["pot_count_seasonal"].astype(float).values,
+                s=16,
+                color=season_colors.get(seas, "#c9d1d9"),
+                edgecolor="#30363d",
+                linewidth=0.3,
+                alpha=0.9,
+                label=seas,
+            )
+
+        rr = _pearsonr(x, y)
+        if x.size >= 3:
+            try:
+                m, b = np.polyfit(x, y, 1)
+                xs = np.linspace(np.min(x), np.max(x), 50)
+                ax.plot(xs, m * xs + b, color="#8b949e", linewidth=1.0)
+            except Exception:
+                pass
+
+        ax.set_title(label, fontsize=10)
+        ax.grid(True, alpha=0.2)
+        if rr is not None:
+            ax.text(0.02, 0.95, f"r={rr:.2f}", transform=ax.transAxes, ha="left", va="top", fontsize=9, color="#8b949e")
+        if i == 0:
+            ax.legend(loc="best", fontsize=7, frameon=False)
+
+    for j in range(n, nrows * ncols):
+        r = j // ncols
+        k = j % ncols
+        axes[r, k].axis("off")
+
+    fig.suptitle(f"Teleconnections: seasonal POT counts vs climate indices — Station {staid8}", fontsize=12)
+    fig.tight_layout(rect=[0, 0.02, 1, 0.92])
+    os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
+    plt.savefig(out_path, dpi=150, bbox_inches="tight", pad_inches=0.02)
+    plt.close(fig)
+    return True
+
+
+def plot_teleconn_annual_max(annual_max_series, clim_annual_df, out_path, staid8):
+    """
+    Multi-panel scatter: annual maximum discharge vs annual mean climate indices.
+    """
+    import numpy as np
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    if clim_annual_df is None or clim_annual_df.empty:
+        return False
+    if annual_max_series is None or len(annual_max_series) == 0:
+        return False
+
+    years = list(range(X_MIN.year, X_MAX.year + 1))
+    y_max = {int(y): float(annual_max_series.get(int(y), np.nan)) for y in years}
+    d = clim_annual_df.copy()
+    d = d[(d["year"] >= X_MIN.year) & (d["year"] <= X_MAX.year)].copy()
+    if d.empty:
+        return False
+    d["annual_max"] = d["year"].map(lambda y: y_max.get(int(y), np.nan))
+
+    cols = [(c, label) for c, label in CLIMATE_INDEX_COLS if c in d.columns]
+    if not cols:
+        return False
+
+    n = len(cols)
+    ncols = 4
+    nrows = int(np.ceil(n / ncols))
+    fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(FIG_WIDTH, FIG_HEIGHT * max(1, nrows)))
+    if nrows == 1:
+        axes = np.array([axes])
+    axes = axes.reshape(nrows, ncols)
+
+    for i, (c, label) in enumerate(cols):
+        r = i // ncols
+        k = i % ncols
+        ax = axes[r, k]
+        sub = d[["annual_max", c]].dropna()
+        x = sub[c].astype(float).values
+        y = sub["annual_max"].astype(float).values
+        ax.scatter(x, y, s=18, color="#c9d1d9", edgecolor="#30363d", linewidth=0.3)
+        rr = _pearsonr(x, y)
+        if x.size >= 3:
+            try:
+                m, b = np.polyfit(x, y, 1)
+                xs = np.linspace(np.min(x), np.max(x), 50)
+                ax.plot(xs, m * xs + b, color="#58a6ff", linewidth=1.2)
+            except Exception:
+                pass
+        ax.set_title(label, fontsize=10)
+        ax.grid(True, alpha=0.2)
+        if rr is not None:
+            ax.text(0.02, 0.95, f"r={rr:.2f}", transform=ax.transAxes, ha="left", va="top", fontsize=9, color="#8b949e")
+
+    for j in range(n, nrows * ncols):
+        r = j // ncols
+        k = j % ncols
+        axes[r, k].axis("off")
+
+    fig.suptitle(f"Teleconnections: annual max discharge vs climate indices — Station {staid8}", fontsize=12)
+    fig.tight_layout(rect=[0, 0.02, 1, 0.92])
+    os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
+    plt.savefig(out_path, dpi=150, bbox_inches="tight", pad_inches=0.02)
+    plt.close(fig)
+    return True
+
+
 def plot_teleconn_summary(annual_counts_series, clim_annual_df, out_path, staid8):
     """
     Bar chart summary: Pearson r between annual POT counts and each annual index.
@@ -618,6 +804,7 @@ def main():
 
     clim_monthly = load_climate_indices(args.climate_csv)
     clim_annual = climate_annual_means(clim_monthly) if clim_monthly is not None else None
+    clim_seasonal = climate_seasonal_means(clim_monthly) if clim_monthly is not None else None
 
     out_dirs = [
         PROJECT_ROOT / "docs" / "images" / "usgs_analysis",
@@ -654,6 +841,8 @@ def main():
 
         threshold, events = choose_threshold_target_rate(dfw, cfg)
         ann = annual_counts(events)
+        seas = seasonal_counts(events)
+        annual_max = annual_max_by_year(dfw)
 
         wrote_any = False
         for out_dir in out_dirs:
@@ -670,7 +859,12 @@ def main():
             if clim_annual is not None:
                 if plot_teleconn_counts(ann, clim_annual, str(out_dir / f"teleconn_counts_{staid8}.png"), staid8):
                     wrote_any = True
+                if plot_teleconn_annual_max(annual_max, clim_annual, str(out_dir / f"teleconn_annual_max_{staid8}.png"), staid8):
+                    wrote_any = True
                 if plot_teleconn_summary(ann, clim_annual, str(out_dir / f"teleconn_counts_summary_{staid8}.png"), staid8):
+                    wrote_any = True
+            if clim_seasonal is not None:
+                if plot_teleconn_counts_seasonal(seas, clim_seasonal, str(out_dir / f"teleconn_counts_seasonal_{staid8}.png"), staid8):
                     wrote_any = True
 
         if wrote_any:

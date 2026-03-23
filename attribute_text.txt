@@ -1,0 +1,65 @@
+Analyses to perform (per station)
+---------------------------------
+A) Flow Duration Curve (FDC)
+   - What: Percent exceedance vs discharge to summarize the flow regime.
+   - How:
+     - Take all non-null daily discharge values.
+     - Sort descending; compute exceedance probability p = rank/(N+1) (or rank/N).
+     - Plot discharge (y, log-scale recommended) vs p (x, 0–100%).
+   
+
+B) POT Flood Frequency (counts)
+   - What: Annual and seasonal counts of “flood events” using peaks-over-threshold (POT).
+   - How:
+     - choose threshold so average POT rate ≈ 2 events/year.
+     - Identify events:
+       - A day is an exceedance if Q(t) >= threshold.
+       - Apply a “declustering” window so one storm does not count many times:
+       - Use 14 days between peaks; within a cluster keep the maximum-Q day.
+     - Count events:
+       - Annual counts by calendar year.
+       - Seasonal counts (DJF, MAM, JJA, SON).
+
+C) Flood Seasonality (timing)
+   - What: Which months are flood-rich for the station.
+   - How:
+     - Use the POT event dates (from B).
+     - Create a month histogram (12 bins) showing relative frequency of event months.
+
+D) Large floods summary (top-N)
+   - What: Summarize “rare” events.
+   - How:
+     - From annual maxima (one peak per year), take the top N events (e.g., N=10).
+     - Plot: event rank vs discharge and annotate event dates (or a dot plot over time).
+
+E) Optional: Precipitation–runoff response
+   - What: characterize response timing using your existing IMERG precipitation.
+   - How (simple version):
+     - Build daily precip series from pr_extracted/pr_<STAID8>.csv.
+     - For each POT flood peak date, look back W days (e.g., 0–10) and compute:
+       - cumulative precip and max 1-day precip.
+       - lag = argmax correlation between precip and discharge anomalies in a short window.
+     - Plot a small scatter: event peak Q vs event cumulative precip, and/or a lag histogram.
+   - Output: precip_runoff_lag_<STAID8>.png
+
+F) Optional: Teleconnection relationships (climate indices)
+   - What:
+     - Relate flood metrics (e.g., annual POT counts) to climate indices like PNA/NAO/PDO/AMO/ENSO/MEI/AO.
+   - How:
+     1) Prepare the climate indices table:
+        - Use monthly index values, then aggregate to the same seasons you use for POT counts.
+        - Example season blocks:DJF, MAM, JJA, SON (standard climatological seasons).
+     2) Compute the station response variables:
+        - Annual POT count 
+        - Seasonal POT count 
+        - Annual maximum discharge
+     3) Model / association:
+        - Start with a simple visualization: scatter of index value vs count (per year),
+          plus a fitted line (Poisson GLM mean on count scale).
+        - Use quasi-Poisson when overdispersed (common for flood counts).
+        - Optionally test lagged indices (e.g., winter NAO lag-1 year) as described in some studies.
+     4) Plot outputs:
+        - teleconn_counts_<STAID8>.png:
+          a multi-panel figure (e.g., 2x3) showing index vs annual POT count for selected indices (PNA, NAO, PDO, AMO, ENSO, AO).
+        - teleconn_counts_summary_<STAID8>.png:
+          a small “coefficient summary” bar chart (effect sign/magnitude) for the same station.
