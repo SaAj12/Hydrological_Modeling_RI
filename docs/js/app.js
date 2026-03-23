@@ -123,7 +123,10 @@
   function stationDisplayLabel(s) {
     const id = String(s.id || "");
     const idDisplay = formatStationIdDisplay(id);
-    const name = (s.name && String(s.name).trim()) ? String(s.name).trim() : "";
+    const rawName = (s.name && String(s.name).trim()) ? String(s.name).trim() : "";
+    const name = rawName
+      ? rawName.toLowerCase().replace(/\b([a-z])/g, function (_, c) { return c.toUpperCase(); })
+      : "";
     if (name && name !== id) {
       return name + " (" + idDisplay + ")";
     }
@@ -283,6 +286,45 @@
     if (titleEl) titleEl.textContent = "Precipitation (mm/day) — Station " + id8;
   }
 
+  function sensorImageSlug(name) {
+    var n = name == null ? "" : String(name).trim();
+    if (!n) return "sensor";
+    var parts = n.split(/\s+/).filter(function (x) { return x; });
+    var cleaned = [];
+    for (var i = 0; i < parts.length && cleaned.length < 3; i++) {
+      var tok = parts[i].replace(/[^A-Za-z0-9]+/g, "");
+      if (tok) cleaned.push(tok.toLowerCase());
+    }
+    return cleaned.length > 0 ? cleaned.join("_") : "sensor";
+  }
+
+  function updatePrecipitationFigureForSensor(sensor, sensorIndex) {
+    var wrap = get("precipitation-wrap");
+    var img = get("precipitation-figure");
+    var noData = get("precipitation-no-data");
+    if (!wrap || !img || !noData) return;
+    wrap.classList.remove("hidden");
+    if (sensorIndex == null || sensorIndex < 0) {
+      img.removeAttribute("src");
+      img.classList.add("hidden");
+      noData.classList.remove("hidden");
+      return;
+    }
+    var base = getBasePath();
+    img.onload = function () { img.classList.remove("hidden"); noData.classList.add("hidden"); };
+    img.onerror = function () {
+      img.removeAttribute("src");
+      img.classList.add("hidden");
+      noData.classList.remove("hidden");
+    };
+    img.classList.add("hidden");
+    var slug = sensorImageSlug(sensor && sensor.name ? sensor.name : null);
+    img.src = base + "images/sensors/precipitation_sensor_" + slug + "_" + String(sensorIndex) + ".png";
+    var titleEl = get("precipitation-title");
+    var sensorName = (sensor && sensor.name) ? String(sensor.name) : ("Sensor " + (sensorIndex + 1));
+    if (titleEl) titleEl.textContent = "Precipitation (mm/day) — " + sensorName;
+  }
+
   function loadNoaaStation(s) {
     var sensorsSelect = get("sensors-select");
     if (sensorsSelect) sensorsSelect.value = "";
@@ -333,7 +375,8 @@
       if (w) w.classList.add("hidden");
     });
     var prWrap = get("precipitation-wrap");
-    if (prWrap) prWrap.classList.add("hidden");
+    if (prWrap) prWrap.classList.remove("hidden");
+    updatePrecipitationFigureForSensor(sensor, sensorIndex);
     destroyCharts();
   }
 
@@ -567,7 +610,14 @@
         weight: 1,
         fillOpacity: 0.9,
       });
-      marker.bindTooltip("NOAA: " + label, { permanent: false });
+      var latText = Number(s.lat).toFixed(4);
+      var lonText = Number(s.lon).toFixed(4);
+      var nameText = (s.name && s.name.trim()) ? s.name.trim() : String(s.id || "NOAA");
+      var idText = s.id != null ? String(s.id) : "";
+      marker.bindTooltip(
+        "NOAA station<br>" + nameText + " — Lat " + latText + ", Lon " + lonText + " (ID: " + idText + ")",
+        { permanent: false }
+      );
       if (s.id != null) noaaMarkersById.set(String(s.id), marker);
       marker.on("click", function () {
         get("discharge-select").value = "";
@@ -606,7 +656,13 @@
         weight: 1,
         fillOpacity: 0.9,
       });
-      marker.bindTooltip("Sensor: " + (s.name || ""), { permanent: false });
+      var latText = Number(s.lat).toFixed(4);
+      var lonText = Number(s.lon).toFixed(4);
+      var nameText = (s.name && s.name.trim()) ? s.name.trim() : "Sensor";
+      marker.bindTooltip(
+        "Sensor<br>" + nameText + " — Lat " + latText + ", Lon " + lonText + " (ID: " + String(idx) + ")",
+        { permanent: false }
+      );
       marker.on("click", function () {
         loadSensorStation(s, idx);
         if (sensorsSelect) sensorsSelect.value = String(idx);
@@ -644,7 +700,14 @@
           fillOpacity: 0.9,
         });
         // Green markers represent USGS discharge stations; show USGS identity on hover.
-        marker.bindTooltip("USGS " + label, { permanent: false });
+        var idDisplay = formatStationIdDisplay(String(sid));
+        var latText = Number(s.lat).toFixed(4);
+        var lonText = Number(s.lon).toFixed(4);
+        var nameText = (s.name && String(s.name).trim()) ? String(s.name).trim() : String(sid);
+        marker.bindTooltip(
+          "USGS station<br>" + nameText + " — Lat " + latText + ", Lon " + lonText + " (ID: " + idDisplay + ")",
+          { permanent: false }
+        );
         usgsMarkersById.set(String(sid), marker);
         marker.on("click", async function () {
           get("discharge-select").value = sid;

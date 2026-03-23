@@ -101,7 +101,10 @@
 
   function stationDisplayLabel(s) {
     const id = String(s.id || "");
-    const name = (s.name && String(s.name).trim()) ? String(s.name).trim() : "";
+    const rawName = (s.name && String(s.name).trim()) ? String(s.name).trim() : "";
+    const name = rawName
+      ? rawName.toLowerCase().replace(/\b([a-z])/g, function (_, c) { return c.toUpperCase(); })
+      : "";
     if (name && name !== id) {
       return name + " (" + id + ")";
     }
@@ -250,7 +253,14 @@
           fillOpacity: 0.9,
         });
         // Green markers represent USGS discharge stations; show USGS identity on hover.
-        marker.bindTooltip("USGS " + label, { permanent: false });
+        var idDisplay = formatStationIdDisplay(String(sid));
+        var latText = Number(s.lat).toFixed(4);
+        var lonText = Number(s.lon).toFixed(4);
+        var nameText = (s.name && String(s.name).trim()) ? String(s.name).trim() : String(sid);
+        marker.bindTooltip(
+          "USGS station<br>" + nameText + " — Lat " + latText + ", Lon " + lonText + " (ID: " + idDisplay + ")",
+          { permanent: false }
+        );
         usgsMarkersById.set(String(sid), marker);
         marker.on("click", async () => {
           loadDischargeStation(sid, s.lat, s.lon, name !== sid ? name : null);

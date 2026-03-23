@@ -13,7 +13,10 @@
   function stationDisplayLabel(s) {
     const id = String(s.id || "");
     const idDisplay = formatStationIdDisplay(id);
-    const name = (s.name && String(s.name).trim()) ? String(s.name).trim() : "";
+    const rawName = (s.name && String(s.name).trim()) ? String(s.name).trim() : "";
+    const name = rawName
+      ? rawName.toLowerCase().replace(/\b([a-z])/g, function (_, c) { return c.toUpperCase(); })
+      : "";
     if (name && name !== id) return name + " (" + idDisplay + ")";
     return idDisplay || "—";
   }

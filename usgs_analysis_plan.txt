@@ -8,6 +8,8 @@ save them as static PNG plots, and display them on the GitHub Pages site by load
 
 This plan describes WHAT analyses to do and HOW to do them. It does not run any analysis.
 
+`scripts/plot_usgs_analysis.py` now computes per-station USGS PNGs (FDC, POT seasonal, monthly seasonality, top-N extremes, teleconn counts, teleconn summary) into both `docs/images/usgs_analysis/` and `frontend/images/usgs_analysis/`. `usgs_analysis.html` + `usgs_analysis.js` then load the matching `*_STAID8.png` files on dropdown selection.
+
 
 Inputs (already in this repo / pipeline)
 ---------------------------------------

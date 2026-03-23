@@ -163,10 +163,26 @@ body {
 .usgs-charts {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
+  width: 100%;
+  gap: 0.75rem;
+  align-items: stretch;
+  justify-items: stretch;
 }
 .usgs-charts .chart-wrap {
   margin-bottom: 0;
+  padding: 0.25rem 0.35rem 0.35rem;
+  width: 100%;
+  min-width: 0;
+}
+
+/* Teleconnections should take its own full row */
+.usgs-charts #usgs-teleconn-wrap {
+  grid-column: 1 / -1;
+}
+
+/* Allow Leaflet tooltips to wrap (needed for multi-line hover text). */
+.leaflet-tooltip {
+  white-space: normal !important;
 }
 
 @media (max-width: 768px) {
