@@ -180,6 +180,11 @@ body {
   grid-column: 1 / -1;
 }
 
+/* Keep the last summary row tidy */
+.usgs-charts #usgs-teleconn-summary-annual-max-wrap {
+  grid-column: 1 / -1;
+}
+
 /* Allow Leaflet tooltips to wrap (needed for multi-line hover text). */
 .leaflet-tooltip {
   white-space: normal !important;

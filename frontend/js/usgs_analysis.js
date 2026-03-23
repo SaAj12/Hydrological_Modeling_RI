@@ -72,6 +72,8 @@
     wireFigure("usgs-teleconn-seasonal-figure", "usgs-teleconn-seasonal-no-data", base + "images/usgs_analysis/teleconn_counts_seasonal_" + id8 + ".png");
     wireFigure("usgs-teleconn-annual-max-figure", "usgs-teleconn-annual-max-no-data", base + "images/usgs_analysis/teleconn_annual_max_" + id8 + ".png");
     wireFigure("usgs-teleconn-summary-figure", "usgs-teleconn-summary-no-data", base + "images/usgs_analysis/teleconn_counts_summary_" + id8 + ".png");
+    wireFigure("usgs-teleconn-summary-seasonal-figure", "usgs-teleconn-summary-seasonal-no-data", base + "images/usgs_analysis/teleconn_counts_summary_seasonal_" + id8 + ".png");
+    wireFigure("usgs-teleconn-summary-annual-max-figure", "usgs-teleconn-summary-annual-max-no-data", base + "images/usgs_analysis/teleconn_annual_max_summary_" + id8 + ".png");
 
     const setTitle = function (elId, text) { const el = get(elId); if (el) el.textContent = text; };
     setTitle("usgs-fdc-title", "Flow duration curve (FDC) — Station " + id8);
@@ -82,6 +84,8 @@
     setTitle("usgs-teleconn-seasonal-title", "Teleconnections (indices vs seasonal POT count) — Station " + id8);
     setTitle("usgs-teleconn-annual-max-title", "Teleconnections (indices vs annual max discharge) — Station " + id8);
     setTitle("usgs-teleconn-summary-title", "Teleconnections summary — Station " + id8);
+    setTitle("usgs-teleconn-summary-seasonal-title", "Teleconnections summary (seasonal POT count) — Station " + id8);
+    setTitle("usgs-teleconn-summary-annual-max-title", "Teleconnections summary (annual max discharge) — Station " + id8);
   }
 
   async function init() {

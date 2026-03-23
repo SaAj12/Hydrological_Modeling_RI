@@ -11,6 +11,8 @@ Outputs (per station, both frontend/ and docs/):
   - teleconn_counts_seasonal_<STAID8>.png
   - teleconn_annual_max_<STAID8>.png
   - teleconn_counts_summary_<STAID8>.png
+  - teleconn_counts_summary_seasonal_<STAID8>.png
+  - teleconn_annual_max_summary_<STAID8>.png
 
 Design decisions (from usgs_analysis_plan.txt):
   - POT threshold: target-rate method (≈2 events/year)
@@ -723,6 +725,126 @@ def plot_teleconn_annual_max(annual_max_series, clim_annual_df, out_path, staid8
     return True
 
 
+def plot_teleconn_summary_seasonal(seasonal_counts_df, clim_seasonal_df, out_path, staid8):
+    """
+    Bar chart summary: Pearson r between seasonal POT counts and each seasonal climate index.
+    """
+    import numpy as np
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    if clim_seasonal_df is None or clim_seasonal_df.empty:
+        return False
+    if seasonal_counts_df is None or seasonal_counts_df.empty:
+        return False
+
+    d = clim_seasonal_df.copy()
+    d = d[(d["year"] >= X_MIN.year) & (d["year"] <= X_MAX.year)].copy()
+    if d.empty:
+        return False
+
+    sc = seasonal_counts_df.copy()
+    sc = sc[(sc["year"] >= X_MIN.year) & (sc["year"] <= X_MAX.year)].copy()
+    if sc.empty:
+        return False
+
+    sc["key"] = sc["year"].astype(int).astype(str) + "|" + sc["season"].astype(str)
+    sc_map = {k: int(v) for k, v in zip(sc["key"], sc["count"])}
+    d["key"] = d["year"].astype(int).astype(str) + "|" + d["season"].astype(str)
+    d["pot_count_seasonal"] = d["key"].map(lambda k: sc_map.get(k, np.nan))
+
+    labels = []
+    rs = []
+    for c, label in CLIMATE_INDEX_COLS:
+        if c not in d.columns:
+            continue
+        sub = d[[c, "pot_count_seasonal"]].dropna()
+        r = _pearsonr(sub[c].astype(float).values, sub["pot_count_seasonal"].astype(float).values)
+        if r is None:
+            continue
+        labels.append(label)
+        rs.append(r)
+
+    if not rs:
+        return False
+
+    fig, ax = plt.subplots(figsize=FIG_SIZE)
+    xs = np.arange(len(rs))
+    colors = ["#3fb950" if v >= 0 else "#f85149" for v in rs]
+    ax.bar(xs, rs, color=colors, edgecolor="#30363d", linewidth=0.4)
+    ax.axhline(0, color="#30363d", linewidth=0.8)
+    ax.set_xticks(xs)
+    ax.set_xticklabels(labels, rotation=30, ha="right")
+    ax.set_ylabel("Pearson r")
+    ax.set_title(f"Teleconnection summary (seasonal POT count vs index) — Station {staid8}", fontsize=12)
+    ax.grid(True, axis="y", alpha=0.2)
+    ax.set_ylim(-1.0, 1.0)
+    fig.subplots_adjust(left=0.08, right=0.98, top=0.92, bottom=0.25)
+
+    os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
+    plt.savefig(out_path, dpi=150, bbox_inches="tight", pad_inches=0.02)
+    plt.close(fig)
+    return True
+
+
+def plot_teleconn_annual_max_summary(annual_max_series, clim_annual_df, out_path, staid8):
+    """
+    Bar chart summary: Pearson r between annual max discharge and each annual climate index.
+    """
+    import numpy as np
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    if clim_annual_df is None or clim_annual_df.empty:
+        return False
+    if annual_max_series is None or len(annual_max_series) == 0:
+        return False
+
+    years = list(range(X_MIN.year, X_MAX.year + 1))
+    y_max = {int(y): float(annual_max_series.get(int(y), np.nan)) for y in years}
+    d = clim_annual_df.copy()
+    d = d[(d["year"] >= X_MIN.year) & (d["year"] <= X_MAX.year)].copy()
+    if d.empty:
+        return False
+
+    d["annual_max"] = d["year"].map(lambda y: y_max.get(int(y), np.nan))
+
+    labels = []
+    rs = []
+    for c, label in CLIMATE_INDEX_COLS:
+        if c not in d.columns:
+            continue
+        sub = d[[c, "annual_max"]].dropna()
+        r = _pearsonr(sub[c].astype(float).values, sub["annual_max"].astype(float).values)
+        if r is None:
+            continue
+        labels.append(label)
+        rs.append(r)
+
+    if not rs:
+        return False
+
+    fig, ax = plt.subplots(figsize=FIG_SIZE)
+    xs = np.arange(len(rs))
+    colors = ["#3fb950" if v >= 0 else "#f85149" for v in rs]
+    ax.bar(xs, rs, color=colors, edgecolor="#30363d", linewidth=0.4)
+    ax.axhline(0, color="#30363d", linewidth=0.8)
+    ax.set_xticks(xs)
+    ax.set_xticklabels(labels, rotation=30, ha="right")
+    ax.set_ylabel("Pearson r")
+    ax.set_title(f"Teleconnection summary (annual max discharge vs index) — Station {staid8}", fontsize=12)
+    ax.grid(True, axis="y", alpha=0.2)
+    ax.set_ylim(-1.0, 1.0)
+    fig.subplots_adjust(left=0.08, right=0.98, top=0.92, bottom=0.25)
+
+    os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
+    plt.savefig(out_path, dpi=150, bbox_inches="tight", pad_inches=0.02)
+    plt.close(fig)
+    return True
+
+
 def plot_teleconn_summary(annual_counts_series, clim_annual_df, out_path, staid8):
     """
     Bar chart summary: Pearson r between annual POT counts and each annual index.
@@ -863,8 +985,12 @@ def main():
                     wrote_any = True
                 if plot_teleconn_summary(ann, clim_annual, str(out_dir / f"teleconn_counts_summary_{staid8}.png"), staid8):
                     wrote_any = True
+                if plot_teleconn_annual_max_summary(annual_max, clim_annual, str(out_dir / f"teleconn_annual_max_summary_{staid8}.png"), staid8):
+                    wrote_any = True
             if clim_seasonal is not None:
                 if plot_teleconn_counts_seasonal(seas, clim_seasonal, str(out_dir / f"teleconn_counts_seasonal_{staid8}.png"), staid8):
+                    wrote_any = True
+                if plot_teleconn_summary_seasonal(seas, clim_seasonal, str(out_dir / f"teleconn_counts_summary_seasonal_{staid8}.png"), staid8):
                     wrote_any = True
 
         if wrote_any:
