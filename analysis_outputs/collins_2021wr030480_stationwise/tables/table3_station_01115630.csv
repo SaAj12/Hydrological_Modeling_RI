@@ -1,0 +1,4 @@
+station_id,group,DJF_fraction,MAM_fraction,JJA_fraction,SON_fraction
+01115630,all_ams,0.5,0.3684210526315789,0.05263157894736842,0.07894736842105263
+01115630,10_largest,0.5,0.5,0.0,0.0
+01115630,2_largest,0.5,0.5,0.0,0.0
