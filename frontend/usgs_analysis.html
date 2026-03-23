@@ -35,7 +35,12 @@
           <div class="charts usgs-charts">
             <div id="usgs-fdc-wrap" class="chart-wrap vtec-wrap">
               <h3 id="usgs-fdc-title">Flow duration curve (FDC) — Station —</h3>
-              <img id="usgs-fdc-figure" src="" alt="Flow duration curve" class="vtec-img" />
+              <img id="usgs-fdc-figure" src="" alt="Flow duration curve" class="vtec-img" title="Flow Duration Curve (FDC)
+   - What: Percent exceedance vs discharge to summarize the flow regime.
+   - How:
+     - Take all non-null daily discharge values.
+     - Sort descending; compute exceedance probability p = rank/(N+1) (or rank/N).
+     - Plot discharge (y, log-scale recommended) vs p (x, 0–100%)." />
               <p id="usgs-fdc-no-data" class="vtec-no-data hidden">No FDC figure available.</p>
             </div>
 
