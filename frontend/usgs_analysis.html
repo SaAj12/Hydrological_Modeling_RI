@@ -62,42 +62,6 @@
               <img id="usgs-extremes-figure" src="" alt="Large floods" class="vtec-img" title="Large floods summary (top-N)&#10;   - What: Summarize “rare” events.&#10;   - How:&#10;     - From annual maxima (one peak per year), take the top N events (e.g., N=10).&#10;     - Plot: event rank vs discharge and annotate event dates (or a dot plot over time)." />
               <p id="usgs-extremes-no-data" class="vtec-no-data hidden">No extremes figure available.</p>
             </div>
-
-            <div id="usgs-teleconn-wrap" class="chart-wrap vtec-wrap">
-              <h3 id="usgs-teleconn-title">Teleconnections (indices vs annual POT count) — Station —</h3>
-              <img id="usgs-teleconn-figure" src="" alt="Teleconnections" class="vtec-img" title="Teleconnection relationships (climate indices)&#10;   - What: Relate flood metrics (e.g., annual POT counts) to climate indices like PNA/NAO/PDO/AMO/ENSO/MEI/AO.&#10;   - How:&#10;     1) Prepare the climate indices table:&#10;        - Use monthly index values, then aggregate to the same seasons you use for POT counts.&#10;        - Example season blocks:DJF, MAM, JJA, SON (standard climatological seasons).&#10;     2) Compute the station response variables:&#10;        - Annual POT count&#10;        - Seasonal POT count&#10;        - Annual maximum discharge&#10;     3) Model / association:&#10;        - Start with a simple visualization: scatter of index value vs count (per year), plus a fitted line (Poisson GLM mean on count scale).&#10;        - Use quasi-Poisson when overdispersed (common for flood counts).&#10;        - Optionally test lagged indices (e.g., winter NAO lag-1 year) as described in some studies.&#10;     4) Plot outputs:&#10;        - teleconn_counts_&lt;STAID8&gt;.png: a multi-panel figure (e.g., 2x3) showing index vs annual POT count for selected indices (PNA, NAO, PDO, AMO, ENSO, AO).&#10;        - teleconn_counts_summary_&lt;STAID8&gt;.png: a small “coefficient summary” bar chart (effect sign/magnitude) for the same station." />
-              <p id="usgs-teleconn-no-data" class="vtec-no-data hidden">No teleconnection figure available.</p>
-            </div>
-
-            <div id="usgs-teleconn-seasonal-wrap" class="chart-wrap vtec-wrap">
-              <h3 id="usgs-teleconn-seasonal-title">Teleconnections (indices vs seasonal POT count) — Station —</h3>
-              <img id="usgs-teleconn-seasonal-figure" src="" alt="Teleconnections seasonal" class="vtec-img" title="Teleconnection relationships (climate indices)&#10;   - What: Relate flood metrics (e.g., annual POT counts) to climate indices like PNA/NAO/PDO/AMO/ENSO/MEI/AO.&#10;   - How:&#10;     1) Prepare the climate indices table:&#10;        - Use monthly index values, then aggregate to the same seasons you use for POT counts.&#10;        - Example season blocks:DJF, MAM, JJA, SON (standard climatological seasons).&#10;     2) Compute the station response variables:&#10;        - Annual POT count&#10;        - Seasonal POT count&#10;        - Annual maximum discharge&#10;     3) Model / association:&#10;        - Start with a simple visualization: scatter of index value vs count (per year), plus a fitted line (Poisson GLM mean on count scale).&#10;        - Use quasi-Poisson when overdispersed (common for flood counts).&#10;        - Optionally test lagged indices (e.g., winter NAO lag-1 year) as described in some studies." />
-              <p id="usgs-teleconn-seasonal-no-data" class="vtec-no-data hidden">No seasonal teleconnection figure available.</p>
-            </div>
-
-            <div id="usgs-teleconn-annual-max-wrap" class="chart-wrap vtec-wrap">
-              <h3 id="usgs-teleconn-annual-max-title">Teleconnections (indices vs annual max discharge) — Station —</h3>
-              <img id="usgs-teleconn-annual-max-figure" src="" alt="Teleconnections annual max" class="vtec-img" title="Teleconnection relationships (climate indices)&#10;   - What: Relate flood metrics (e.g., annual POT counts) to climate indices like PNA/NAO/PDO/AMO/ENSO/MEI/AO.&#10;   - How:&#10;     1) Prepare the climate indices table:&#10;        - Use monthly index values, then aggregate to the same seasons you use for POT counts.&#10;        - Example season blocks:DJF, MAM, JJA, SON (standard climatological seasons).&#10;     2) Compute the station response variables:&#10;        - Annual POT count&#10;        - Seasonal POT count&#10;        - Annual maximum discharge&#10;     3) Model / association:&#10;        - Start with a simple visualization: scatter of index value vs count (per year), plus a fitted line (Poisson GLM mean on count scale).&#10;        - Use quasi-Poisson when overdispersed (common for flood counts).&#10;        - Optionally test lagged indices (e.g., winter NAO lag-1 year) as described in some studies." />
-              <p id="usgs-teleconn-annual-max-no-data" class="vtec-no-data hidden">No annual max teleconnection figure available.</p>
-            </div>
-
-            <div id="usgs-teleconn-summary-wrap" class="chart-wrap vtec-wrap">
-              <h3 id="usgs-teleconn-summary-title">Teleconnections summary — Station —</h3>
-              <img id="usgs-teleconn-summary-figure" src="" alt="Teleconnections summary" class="vtec-img" title="Teleconnection relationships (climate indices)&#10;   - What: Relate flood metrics (e.g., annual POT counts) to climate indices like PNA/NAO/PDO/AMO/ENSO/MEI/AO.&#10;   - How:&#10;     1) Prepare the climate indices table:&#10;        - Use monthly index values, then aggregate to the same seasons you use for POT counts.&#10;        - Example season blocks:DJF, MAM, JJA, SON (standard climatological seasons).&#10;     2) Compute the station response variables:&#10;        - Annual POT count&#10;        - Seasonal POT count&#10;        - Annual maximum discharge&#10;     3) Model / association:&#10;        - Start with a simple visualization: scatter of index value vs count (per year), plus a fitted line (Poisson GLM mean on count scale).&#10;        - Use quasi-Poisson when overdispersed (common for flood counts).&#10;        - Optionally test lagged indices (e.g., winter NAO lag-1 year) as described in some studies.&#10;     4) Plot outputs:&#10;        - teleconn_counts_&lt;STAID8&gt;.png: a multi-panel figure (e.g., 2x3) showing index vs annual POT count for selected indices (PNA, NAO, PDO, AMO, ENSO, AO).&#10;        - teleconn_counts_summary_&lt;STAID8&gt;.png: a small “coefficient summary” bar chart (effect sign/magnitude) for the same station." />
-              <p id="usgs-teleconn-summary-no-data" class="vtec-no-data hidden">No teleconnection summary figure available.</p>
-            </div>
-
-            <div id="usgs-teleconn-summary-seasonal-wrap" class="chart-wrap vtec-wrap">
-              <h3 id="usgs-teleconn-summary-seasonal-title">Teleconnections summary (seasonal POT count) — Station —</h3>
-              <img id="usgs-teleconn-summary-seasonal-figure" src="" alt="Teleconnections summary seasonal" class="vtec-img" title="Teleconnection summary (seasonal POT count vs indices)&#10;   - What: Pearson r between seasonal POT counts and each climate index.&#10;   - How: Aggregate climate indices and POT counts by season-year, then compute r(index, seasonal_count) for each index." />
-              <p id="usgs-teleconn-summary-seasonal-no-data" class="vtec-no-data hidden">No seasonal teleconnection summary figure available.</p>
-            </div>
-
-            <div id="usgs-teleconn-summary-annual-max-wrap" class="chart-wrap vtec-wrap">
-              <h3 id="usgs-teleconn-summary-annual-max-title">Teleconnections summary (annual max discharge) — Station —</h3>
-              <img id="usgs-teleconn-summary-annual-max-figure" src="" alt="Teleconnections summary annual max" class="vtec-img" title="Teleconnection summary (annual max discharge vs indices)&#10;   - What: Pearson r between annual maximum discharge and each climate index.&#10;   - How: Map each year’s annual max discharge to annual mean climate indices, then compute r(index, annual_max) for each index." />
-              <p id="usgs-teleconn-summary-annual-max-no-data" class="vtec-no-data hidden">No annual max teleconnection summary figure available.</p>
-            </div>
           </div>
         </div>
       </section>
