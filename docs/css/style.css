@@ -158,6 +158,22 @@ body {
   flex-direction: column;
   gap: 0;
 }
+
+/* USGS Analysis page: show plots in a 2-column grid */
+.usgs-charts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.usgs-charts .chart-wrap {
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .usgs-charts {
+    grid-template-columns: 1fr;
+  }
+}
 .chart-wrap {
   background: #ffffff;
   border: 1px solid #ddd;

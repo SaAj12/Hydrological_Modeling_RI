@@ -28,6 +28,7 @@ from pathlib import Path
 _SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = _SCRIPT_DIR.parent
 DEFAULT_DISCHARGE_JSON = PROJECT_ROOT / "frontend" / "data" / "discharge_data.json"
+DEFAULT_CLIMATE_CSV = PROJECT_ROOT / "frontend" / "data" / "climate_indices_monthly.csv"
 
 sys.path.insert(0, str(_SCRIPT_DIR))
 from chart_axis_constants import X_MIN, X_MAX, FIG_SIZE, FIG_WIDTH, FIG_HEIGHT, apply_chart_xaxis
@@ -72,11 +73,82 @@ class PotConfig:
     decluster_days: int = 14
 
 
+CLIMATE_INDEX_COLS = [
+    ("enso_soi", "ENSO (SOI)"),
+    ("mei", "MEI"),
+    ("nao", "NAO"),
+    ("pdo", "PDO"),
+    ("amo", "AMO"),
+    ("pna", "PNA"),
+    ("ao", "AO"),
+]
+
+
 def load_discharge(path: Path):
     if not path.exists():
         raise FileNotFoundError(f"Missing {path}. Run: python scripts/export_discharge_data.py")
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def load_climate_indices(path: Path):
+    """
+    Load monthly climate indices CSV.
+    Expected columns: date, year, month, pna, nao, pdo, amo, enso_soi, mei, ao
+    """
+    import pandas as pd
+
+    if not path or not Path(path).exists():
+        return None
+    df = pd.read_csv(path)
+    if df.empty:
+        return None
+    if "year" not in df.columns or "month" not in df.columns:
+        return None
+    df["year"] = pd.to_numeric(df["year"], errors="coerce")
+    df["month"] = pd.to_numeric(df["month"], errors="coerce")
+    df = df.dropna(subset=["year", "month"])
+    df["year"] = df["year"].astype(int)
+    df["month"] = df["month"].astype(int)
+    for c, _label in CLIMATE_INDEX_COLS:
+        if c in df.columns:
+            df[c] = pd.to_numeric(df[c], errors="coerce")
+    return df
+
+
+def _season_year_for_climate(year: int, month: int) -> int:
+    # DJF labeled by Jan/Feb year; December rolls forward.
+    if month == 12:
+        return int(year) + 1
+    return int(year)
+
+
+def climate_annual_means(df_clim):
+    import pandas as pd
+
+    if df_clim is None or df_clim.empty:
+        return None
+    cols = [c for c, _ in CLIMATE_INDEX_COLS if c in df_clim.columns]
+    if not cols:
+        return None
+    g = df_clim.groupby("year")[cols].mean(numeric_only=True).reset_index()
+    return g
+
+
+def climate_seasonal_means(df_clim):
+    import pandas as pd
+
+    if df_clim is None or df_clim.empty:
+        return None
+    cols = [c for c, _ in CLIMATE_INDEX_COLS if c in df_clim.columns]
+    if not cols:
+        return None
+    d = df_clim.copy()
+    d["season"] = d["month"].astype(int).map(_season_label)
+    d["season_year"] = [ _season_year_for_climate(y, m) for y, m in zip(d["year"].astype(int), d["month"].astype(int)) ]
+    g = d.groupby(["season_year", "season"])[cols].mean(numeric_only=True).reset_index()
+    g = g.rename(columns={"season_year": "year"})
+    return g
 
 
 def series_to_df(series):
@@ -379,9 +451,151 @@ def plot_extremes_topn(df_window, out_path, staid8, n_top=10):
     return True
 
 
+def _pearsonr(x, y):
+    import numpy as np
+
+    x = np.asarray(x, dtype=float)
+    y = np.asarray(y, dtype=float)
+    if x.size < 3 or y.size < 3:
+        return None
+    if np.allclose(np.nanstd(x), 0) or np.allclose(np.nanstd(y), 0):
+        return None
+    r = np.corrcoef(x, y)[0, 1]
+    if np.isfinite(r):
+        return float(r)
+    return None
+
+
+def plot_teleconn_counts(annual_counts_series, clim_annual_df, out_path, staid8):
+    """
+    Multi-panel scatter: annual POT counts vs annual mean climate indices.
+    """
+    import numpy as np
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    if clim_annual_df is None or clim_annual_df.empty:
+        return False
+    if annual_counts_series is None or len(annual_counts_series) == 0:
+        return False
+
+    years = list(range(X_MIN.year, X_MAX.year + 1))
+    y_counts = {int(y): int(annual_counts_series.get(int(y), 0)) for y in years}
+
+    # Join to climate by year
+    d = clim_annual_df.copy()
+    d = d[(d["year"] >= X_MIN.year) & (d["year"] <= X_MAX.year)].copy()
+    if d.empty:
+        return False
+    d["pot_count"] = d["year"].map(lambda y: y_counts.get(int(y), 0))
+
+    cols = [(c, label) for c, label in CLIMATE_INDEX_COLS if c in d.columns]
+    if not cols:
+        return False
+
+    n = len(cols)
+    ncols = 4
+    nrows = int(np.ceil(n / ncols))
+    fig, axes = plt.subplots(nrows=nrows, ncols=ncols, figsize=(FIG_WIDTH, FIG_HEIGHT * max(1, nrows)))
+    if nrows == 1:
+        axes = np.array([axes])
+    axes = axes.reshape(nrows, ncols)
+
+    for i, (c, label) in enumerate(cols):
+        r = i // ncols
+        k = i % ncols
+        ax = axes[r, k]
+        sub = d[["pot_count", c]].dropna()
+        x = sub[c].astype(float).values
+        y = sub["pot_count"].astype(float).values
+        ax.scatter(x, y, s=18, color="#c9d1d9", edgecolor="#30363d", linewidth=0.3)
+        rr = _pearsonr(x, y)
+        if x.size >= 3:
+            try:
+                m, b = np.polyfit(x, y, 1)
+                xs = np.linspace(np.min(x), np.max(x), 50)
+                ax.plot(xs, m * xs + b, color="#58a6ff", linewidth=1.2)
+            except Exception:
+                pass
+        ax.set_title(label, fontsize=10)
+        ax.grid(True, alpha=0.2)
+        if rr is not None:
+            ax.text(0.02, 0.95, f"r={rr:.2f}", transform=ax.transAxes, ha="left", va="top", fontsize=9, color="#8b949e")
+
+    # Hide unused axes
+    for j in range(n, nrows * ncols):
+        r = j // ncols
+        k = j % ncols
+        axes[r, k].axis("off")
+
+    fig.suptitle(f"Teleconnections: annual POT counts vs climate indices — Station {staid8}", fontsize=12)
+    fig.tight_layout(rect=[0, 0.02, 1, 0.92])
+    os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
+    plt.savefig(out_path, dpi=150, bbox_inches="tight", pad_inches=0.02)
+    plt.close(fig)
+    return True
+
+
+def plot_teleconn_summary(annual_counts_series, clim_annual_df, out_path, staid8):
+    """
+    Bar chart summary: Pearson r between annual POT counts and each annual index.
+    """
+    import numpy as np
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    if clim_annual_df is None or clim_annual_df.empty:
+        return False
+    if annual_counts_series is None or len(annual_counts_series) == 0:
+        return False
+
+    years = list(range(X_MIN.year, X_MAX.year + 1))
+    y_counts = {int(y): int(annual_counts_series.get(int(y), 0)) for y in years}
+    d = clim_annual_df.copy()
+    d = d[(d["year"] >= X_MIN.year) & (d["year"] <= X_MAX.year)].copy()
+    if d.empty:
+        return False
+    d["pot_count"] = d["year"].map(lambda y: y_counts.get(int(y), 0))
+
+    labels = []
+    rs = []
+    for c, label in CLIMATE_INDEX_COLS:
+        if c not in d.columns:
+            continue
+        sub = d[["pot_count", c]].dropna()
+        r = _pearsonr(sub[c].astype(float).values, sub["pot_count"].astype(float).values)
+        if r is None:
+            continue
+        labels.append(label)
+        rs.append(r)
+
+    if not rs:
+        return False
+
+    fig, ax = plt.subplots(figsize=FIG_SIZE)
+    xs = np.arange(len(rs))
+    colors = ["#3fb950" if v >= 0 else "#f85149" for v in rs]
+    ax.bar(xs, rs, color=colors, edgecolor="#30363d", linewidth=0.4)
+    ax.axhline(0, color="#30363d", linewidth=0.8)
+    ax.set_xticks(xs)
+    ax.set_xticklabels(labels, rotation=30, ha="right")
+    ax.set_ylabel("Pearson r")
+    ax.set_title(f"Teleconnection summary (annual POT count vs index) — Station {staid8}", fontsize=12)
+    ax.grid(True, axis="y", alpha=0.2)
+    ax.set_ylim(-1.0, 1.0)
+    fig.subplots_adjust(left=0.08, right=0.98, top=0.92, bottom=0.25)
+    os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
+    plt.savefig(out_path, dpi=150, bbox_inches="tight", pad_inches=0.02)
+    plt.close(fig)
+    return True
+
+
 def main():
     p = argparse.ArgumentParser(description="Generate USGS analysis PNGs (FDC, POT, seasonality, extremes)")
     p.add_argument("--discharge-json", type=Path, default=DEFAULT_DISCHARGE_JSON)
+    p.add_argument("--climate-csv", type=Path, default=DEFAULT_CLIMATE_CSV)
     p.add_argument("--target-events-per-year", type=float, default=2.0)
     p.add_argument("--decluster-days", type=int, default=14)
     p.add_argument("--top-n", type=int, default=10)
@@ -401,6 +615,9 @@ def main():
     data = load_discharge(args.discharge_json)
     stations = data.get("stations", [])
     series_map = data.get("series", {}) or {}
+
+    clim_monthly = load_climate_indices(args.climate_csv)
+    clim_annual = climate_annual_means(clim_monthly) if clim_monthly is not None else None
 
     out_dirs = [
         PROJECT_ROOT / "docs" / "images" / "usgs_analysis",
@@ -436,6 +653,7 @@ def main():
             continue
 
         threshold, events = choose_threshold_target_rate(dfw, cfg)
+        ann = annual_counts(events)
 
         wrote_any = False
         for out_dir in out_dirs:
@@ -449,6 +667,11 @@ def main():
                 wrote_any = True
             if plot_extremes_topn(dfw, str(out_dir / f"extremes_topN_{staid8}.png"), staid8, n_top=args.top_n):
                 wrote_any = True
+            if clim_annual is not None:
+                if plot_teleconn_counts(ann, clim_annual, str(out_dir / f"teleconn_counts_{staid8}.png"), staid8):
+                    wrote_any = True
+                if plot_teleconn_summary(ann, clim_annual, str(out_dir / f"teleconn_counts_summary_{staid8}.png"), staid8):
+                    wrote_any = True
 
         if wrote_any:
             ok += 1

@@ -505,6 +505,33 @@
     }
   }
 
+  function sleep(ms) {
+    return new Promise(function (resolve) { setTimeout(resolve, ms); });
+  }
+
+  async function flashMarker(marker, opts) {
+    if (!marker) return;
+    var flashTimes = (opts && opts.times != null) ? opts.times : 3;
+    var flashRadius = (opts && opts.flashRadius != null) ? opts.flashRadius : 14;
+    var onDurationMs = (opts && opts.onDurationMs != null) ? opts.onDurationMs : 140;
+    var offDurationMs = (opts && opts.offDurationMs != null) ? opts.offDurationMs : 120;
+
+    // Leaflet circleMarker: keep the original look and temporarily "pulse" it.
+    var originalRadius = marker.options && marker.options.radius != null ? marker.options.radius : 6;
+    var originalFillOpacity = marker.options && marker.options.fillOpacity != null ? marker.options.fillOpacity : 0.9;
+    var originalWeight = marker.options && marker.options.weight != null ? marker.options.weight : 1;
+
+    marker.bringToFront && marker.bringToFront();
+    for (var i = 0; i < flashTimes; i++) {
+      marker.setRadius(flashRadius);
+      marker.setStyle({ fillOpacity: 1, weight: originalWeight });
+      await sleep(onDurationMs);
+      marker.setRadius(originalRadius);
+      marker.setStyle({ fillOpacity: originalFillOpacity, weight: originalWeight });
+      await sleep(offDurationMs);
+    }
+  }
+
   async function initMap() {
     const center = [41.75, -71.5];
     map = L.map("map").setView(center, 8);
@@ -513,9 +540,21 @@
       maxZoom: 18,
     }).addTo(map);
 
+    // Scale bar (metric only). Leaflet will automatically switch units as zoom changes.
+    L.control.scale({
+      position: "bottomleft",
+      metric: true,
+      imperial: false,
+      maxWidth: 200,
+    }).addTo(map);
+
     dischargeLayer = L.layerGroup().addTo(map);
     noaaLayer = L.layerGroup().addTo(map);
     sensorsLayer = L.layerGroup().addTo(map);
+
+    var noaaMarkersById = new Map();
+    var sensorMarkersByIndex = new Map();
+    var usgsMarkersById = new Map();
 
     const noaaList = await loadNoaaStations();
     noaaList.forEach(function (s) {
@@ -529,6 +568,7 @@
         fillOpacity: 0.9,
       });
       marker.bindTooltip("NOAA: " + label, { permanent: false });
+      if (s.id != null) noaaMarkersById.set(String(s.id), marker);
       marker.on("click", function () {
         get("discharge-select").value = "";
         get("noaa-select").value = s ? s.id : "";
@@ -554,12 +594,10 @@
         var idx = parseInt(v, 10);
         if (!Number.isFinite(idx) || idx < 0 || idx >= sensorsList.length) return;
         loadSensorStation(sensorsList[idx], idx);
-        if (sensorsList[idx] && sensorsList[idx].lat != null && sensorsList[idx].lon != null) {
-          map.setView([sensorsList[idx].lat, sensorsList[idx].lon], 12);
-        }
+        flashMarker(sensorMarkersByIndex.get(idx));
       });
     }
-    sensorsList.forEach(function (s) {
+    sensorsList.forEach(function (s, idx) {
       if (s.lat == null || s.lon == null) return;
       var marker = L.circleMarker([s.lat, s.lon], {
         radius: 6,
@@ -570,11 +608,11 @@
       });
       marker.bindTooltip("Sensor: " + (s.name || ""), { permanent: false });
       marker.on("click", function () {
-        var idx = sensorsList.indexOf(s);
-        loadSensorStation(s, idx >= 0 ? idx : null);
-        if (sensorsSelect) sensorsSelect.value = idx >= 0 ? String(idx) : "";
+        loadSensorStation(s, idx);
+        if (sensorsSelect) sensorsSelect.value = String(idx);
       });
       sensorsLayer.addLayer(marker);
+      sensorMarkersByIndex.set(idx, marker);
     });
 
     var legend = L.control({ position: "bottomright" });
@@ -582,8 +620,8 @@
       var div = L.DomUtil.create("div", "map-legend");
       div.innerHTML =
         "<strong>Legend</strong><br>" +
-        "<span class='legend-item'><span class='legend-swatch' style='background:#3fb950;border-color:#2ea043'></span> USGS discharge</span><br>" +
-        "<span class='legend-item'><span class='legend-swatch' style='background:#58a6ff;border-color:#388bfd'></span> NOAA tide/water level</span><br>" +
+        "<span class='legend-item'><span class='legend-swatch' style='background:#3fb950;border-color:#2ea043'></span> USGS stations</span><br>" +
+        "<span class='legend-item'><span class='legend-swatch' style='background:#58a6ff;border-color:#388bfd'></span> NOAA stations</span><br>" +
         "<span class='legend-item'><span class='legend-swatch' style='background:#f0883e;border-color:#c76b22'></span> Sensors</span>";
       return div;
     };
@@ -605,7 +643,9 @@
           weight: 1,
           fillOpacity: 0.9,
         });
-        marker.bindTooltip("Discharge: " + label, { permanent: false });
+        // Green markers represent USGS discharge stations; show USGS identity on hover.
+        marker.bindTooltip("USGS " + label, { permanent: false });
+        usgsMarkersById.set(String(sid), marker);
         marker.on("click", async function () {
           get("discharge-select").value = sid;
           get("noaa-select").value = "";
@@ -629,6 +669,7 @@
       var v = this.value;
       if (!v) return;
       get("noaa-select").value = "";
+      flashMarker(usgsMarkersById.get(String(v)));
       var opt = this.options[this.selectedIndex];
       var displayName = opt && opt.dataset.displayName ? opt.dataset.displayName : null;
       var s = stations.find(function (st) { return st.id === v; });
@@ -650,6 +691,7 @@
         var v = this.value;
         if (!v) return;
         get("discharge-select").value = "";
+        flashMarker(noaaMarkersById.get(String(v)));
         var s = noaaList.find(function (st) { return String(st.id) === String(v); });
         if (s) loadNoaaStation(s);
       });

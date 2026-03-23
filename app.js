@@ -186,12 +186,46 @@
     return [];
   }
 
+  function sleep(ms) {
+    return new Promise(function (resolve) { setTimeout(resolve, ms); });
+  }
+
+  async function flashMarker(marker, opts) {
+    if (!marker) return;
+    var flashTimes = (opts && opts.times != null) ? opts.times : 3;
+    var flashRadius = (opts && opts.flashRadius != null) ? opts.flashRadius : 14;
+    var onDurationMs = (opts && opts.onDurationMs != null) ? opts.onDurationMs : 140;
+    var offDurationMs = (opts && opts.offDurationMs != null) ? opts.offDurationMs : 120;
+
+    var originalRadius = marker.options && marker.options.radius != null ? marker.options.radius : 6;
+    var originalFillOpacity = marker.options && marker.options.fillOpacity != null ? marker.options.fillOpacity : 0.9;
+    var originalWeight = marker.options && marker.options.weight != null ? marker.options.weight : 1;
+
+    marker.bringToFront && marker.bringToFront();
+    for (var i = 0; i < flashTimes; i++) {
+      marker.setRadius(flashRadius);
+      marker.setStyle({ fillOpacity: 1, weight: originalWeight });
+      await sleep(onDurationMs);
+      marker.setRadius(originalRadius);
+      marker.setStyle({ fillOpacity: originalFillOpacity, weight: originalWeight });
+      await sleep(offDurationMs);
+    }
+  }
+
   function initMap() {
     const center = [41.75, -71.5];
     map = L.map("map").setView(center, 8);
     L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}", {
       attribution: "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ",
       maxZoom: 18,
+    }).addTo(map);
+
+    // Scale bar (metric only). Leaflet will automatically switch units as zoom changes.
+    L.control.scale({
+      position: "bottomleft",
+      metric: true,
+      imperial: false,
+      maxWidth: 200,
     }).addTo(map);
 
     watershedLayer = L.layerGroup().addTo(map);
@@ -201,6 +235,7 @@
     const dischargeSelect = get("discharge-select");
     const stations = dischargeData ? dischargeData.stations : [];
     const allStationIds = new Set();
+    var usgsMarkersById = new Map();
 
     stations.forEach((s) => {
       const sid = s.id;
@@ -214,7 +249,9 @@
           weight: 1,
           fillOpacity: 0.9,
         });
-        marker.bindTooltip("Discharge: " + label, { permanent: false });
+        // Green markers represent USGS discharge stations; show USGS identity on hover.
+        marker.bindTooltip("USGS " + label, { permanent: false });
+        usgsMarkersById.set(String(sid), marker);
         marker.on("click", async () => {
           loadDischargeStation(sid, s.lat, s.lon, name !== sid ? name : null);
           const series = await fetchStationSeries(sid);
@@ -238,6 +275,7 @@
       const opt = this.options[this.selectedIndex];
       const displayName = opt && opt.dataset.displayName ? opt.dataset.displayName : null;
       const s = stations.find((st) => st.id === v);
+      flashMarker(usgsMarkersById.get(String(v)));
       loadDischargeStation(v, s ? s.lat : null, s ? s.lon : null, displayName || null);
       const series = await fetchStationSeries(v);
       if (series.length > 0) drawDischargeChart(series, formatStationIdDisplay(v));

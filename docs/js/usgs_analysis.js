@@ -62,17 +62,19 @@
 
     const base = getBasePath();
     wireFigure("usgs-fdc-figure", "usgs-fdc-no-data", base + "images/usgs_analysis/fdc_" + id8 + ".png");
-    wireFigure("usgs-pot-annual-figure", "usgs-pot-annual-no-data", base + "images/usgs_analysis/pot_counts_annual_" + id8 + ".png");
     wireFigure("usgs-pot-seasonal-figure", "usgs-pot-seasonal-no-data", base + "images/usgs_analysis/pot_counts_seasonal_" + id8 + ".png");
     wireFigure("usgs-seasonality-figure", "usgs-seasonality-no-data", base + "images/usgs_analysis/seasonality_monthly_" + id8 + ".png");
     wireFigure("usgs-extremes-figure", "usgs-extremes-no-data", base + "images/usgs_analysis/extremes_topN_" + id8 + ".png");
+    wireFigure("usgs-teleconn-figure", "usgs-teleconn-no-data", base + "images/usgs_analysis/teleconn_counts_" + id8 + ".png");
+    wireFigure("usgs-teleconn-summary-figure", "usgs-teleconn-summary-no-data", base + "images/usgs_analysis/teleconn_counts_summary_" + id8 + ".png");
 
     const setTitle = function (elId, text) { const el = get(elId); if (el) el.textContent = text; };
     setTitle("usgs-fdc-title", "Flow duration curve (FDC) — Station " + id8);
-    setTitle("usgs-pot-annual-title", "POT counts (annual) — Station " + id8);
     setTitle("usgs-pot-seasonal-title", "POT counts (seasonal) — Station " + id8);
     setTitle("usgs-seasonality-title", "Flood seasonality (monthly) — Station " + id8);
     setTitle("usgs-extremes-title", "Large floods (top-N) — Station " + id8);
+    setTitle("usgs-teleconn-title", "Teleconnections (indices vs annual POT count) — Station " + id8);
+    setTitle("usgs-teleconn-summary-title", "Teleconnections summary — Station " + id8);
   }
 
   async function init() {
