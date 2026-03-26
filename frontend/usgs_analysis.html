@@ -62,6 +62,54 @@
               <img id="usgs-extremes-figure" src="" alt="Large floods" class="vtec-img" title="Large floods summary (top-N)&#10;   - What: Summarize “rare” events.&#10;   - How:&#10;     - From annual maxima (one peak per year), take the top N events (e.g., N=10).&#10;     - Plot: event rank vs discharge and annotate event dates (or a dot plot over time)." />
               <p id="usgs-extremes-no-data" class="vtec-no-data hidden">No extremes figure available.</p>
             </div>
+
+            <div id="usgs-ams-rank-wrap" class="chart-wrap vtec-wrap">
+              <h3 id="usgs-ams-rank-title">AMS ranking (2010–2025) — Station —</h3>
+              <img id="usgs-ams-rank-figure" src="" alt="AMS ranking" class="vtec-img" title="AMS ranking (2010–2025)&#10;   - What: Annual Maximum Series (one maximum discharge per year) for 2010–2025.&#10;   - How: For each year, take the largest daily discharge; highlight Top-10 and Top-2 years within 2010–2025." />
+              <p id="usgs-ams-rank-no-data" class="vtec-no-data hidden">No AMS ranking figure available.</p>
+            </div>
+
+            <div id="usgs-largest-event-wrap" class="chart-wrap vtec-wrap">
+              <h3 id="usgs-largest-event-title">Largest flood event hydrograph (2010–2025) — Station —</h3>
+              <img id="usgs-largest-event-figure" src="" alt="Largest flood event hydrograph" class="vtec-img" title="Largest flood event hydrograph (2010–2025)&#10;   - What: Hydrograph around the single largest (rank-1) AMS event in 2010–2025.&#10;   - How: Identify the peak year/day from AMS; define an event window using a q90 threshold and a 3-day-below separation rule; show q90/q95/q99 lines and the event window." />
+              <p id="usgs-largest-event-no-data" class="vtec-no-data hidden">No largest-event hydrograph available.</p>
+            </div>
+
+            <div id="usgs-stationwise-fig1-wrap" class="chart-wrap vtec-wrap">
+              <h3 id="usgs-stationwise-fig1-title">Stationwise Figure 1 — AMS ranking (2010–2025) — Station —</h3>
+              <img id="usgs-stationwise-fig1-figure" src="" alt="Stationwise Figure 1" class="vtec-img" title="Stationwise Figure 1 (AMS ranking, 2010–2025)&#10;   - What: AMS points across 2010–2025 with Top-10 and Top-2 highlighted.&#10;   - How: Compute annual maxima from daily discharge for each year in 2010–2025; rank by magnitude within the period." />
+              <p id="usgs-stationwise-fig1-no-data" class="vtec-no-data hidden">No stationwise Figure 1 available.</p>
+            </div>
+
+            <div id="usgs-stationwise-fig2-wrap" class="chart-wrap vtec-wrap">
+              <h3 id="usgs-stationwise-fig2-title">Stationwise Figure 2 — Monthly seasonality — Station —</h3>
+              <img id="usgs-stationwise-fig2-figure" src="" alt="Stationwise Figure 2" class="vtec-img" title="Stationwise Figure 2 (monthly seasonality)&#10;   - What: Monthly frequencies of the station’s Top-10 floods (bars) and Top-2 floods (green dots).&#10;   - How: Use AMS-derived Top-10/Top-2 event dates; compute monthly relative frequencies in water-year month order (Oct–Sep).&#10;   - CI: One-sided 95% bounds from 100,000 Monte Carlo simulations under a circular-uniform (non-seasonal) model." />
+              <p id="usgs-stationwise-fig2-no-data" class="vtec-no-data hidden">No stationwise Figure 2 available.</p>
+            </div>
+
+            <div id="usgs-stationwise-fig3-wrap" class="chart-wrap vtec-wrap">
+              <h3 id="usgs-stationwise-fig3-title">Stationwise Figure 3 — AMS vs top floods seasonality — Station —</h3>
+              <img id="usgs-stationwise-fig3-figure" src="" alt="Stationwise Figure 3" class="vtec-img" title="Stationwise Figure 3 (seasonality comparison)&#10;   - What: Compare monthly seasonality of all AMS floods vs the station’s Top-10 and Top-2 floods.&#10;   - How: Compute monthly relative frequencies for AMS, Top-10, and Top-2 event dates." />
+              <p id="usgs-stationwise-fig3-no-data" class="vtec-no-data hidden">No stationwise Figure 3 available.</p>
+            </div>
+
+            <div id="usgs-stationwise-fig5-wrap" class="chart-wrap vtec-wrap">
+              <h3 id="usgs-stationwise-fig5-title">Stationwise Figure 5 — Expected top-10 occurrence (2010–2025) — Station —</h3>
+              <img id="usgs-stationwise-fig5-figure" src="" alt="Stationwise Figure 5" class="vtec-img" title="Stationwise Figure 5 (expected occurrence)&#10;   - What: Expected distribution for how many of the station’s Top-10 floods fall within 2010–2025.&#10;   - How: Use a hypergeometric model with N=AMS years available, K=10, and n=years in 2010–2025 with data; mark the observed count." />
+              <p id="usgs-stationwise-fig5-no-data" class="vtec-no-data hidden">No stationwise Figure 5 available.</p>
+            </div>
+
+            <div id="usgs-stationwise-fig7-wrap" class="chart-wrap vtec-wrap">
+              <h3 id="usgs-stationwise-fig7-title">Stationwise Figure 7 — Top-2 annual counts trend — Station —</h3>
+              <img id="usgs-stationwise-fig7-figure" src="" alt="Stationwise Figure 7" class="vtec-img" title="Stationwise Figure 7 (trend of Top-2 counts)&#10;   - What: Trend in annual counts of the station’s Top-2 floods.&#10;   - How: Build a year-by-year count series and fit a quasi-Poisson regression (log link) to account for overdispersion." />
+              <p id="usgs-stationwise-fig7-no-data" class="vtec-no-data hidden">No stationwise Figure 7 available.</p>
+            </div>
+
+            <div id="usgs-stationwise-fig8-wrap" class="chart-wrap vtec-wrap">
+              <h3 id="usgs-stationwise-fig8-title">Stationwise Figure 8 — Top-10 annual counts trend — Station —</h3>
+              <img id="usgs-stationwise-fig8-figure" src="" alt="Stationwise Figure 8" class="vtec-img" title="Stationwise Figure 8 (trend of Top-10 counts)&#10;   - What: Trend in annual counts of the station’s Top-10 floods.&#10;   - How: Build a year-by-year count series and fit a quasi-Poisson regression (log link); observed values are shown as scatter." />
+              <p id="usgs-stationwise-fig8-no-data" class="vtec-no-data hidden">No stationwise Figure 8 available.</p>
+            </div>
           </div>
         </div>
       </section>

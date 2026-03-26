@@ -47,6 +47,7 @@ MONTHS = np.arange(1, 13, dtype=int)
 WY_MONTH_ORDER = np.array([10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9], dtype=int)
 WY_MONTH_LABELS = ["O", "N", "D", "J", "F", "M", "A", "M", "J", "J", "A", "S"]
 MC_CI_SIMS = 100000
+LEGEND_FONTSIZE = 10
 
 
 @dataclass
@@ -188,7 +189,7 @@ def fig1_station(ts: TopFloodSeries, out_path: Path, station_id: str):
     ax.set_xlabel("Year")
     ax.set_ylabel("Annual maximum streamflow")
     ax.grid(alpha=0.25)
-    ax.legend(loc="best", fontsize=8)
+    ax.legend(loc="best", fontsize=LEGEND_FONTSIZE)
     fig.tight_layout()
     fig.savefig(out_path, dpi=150)
     plt.close(fig)
@@ -235,7 +236,7 @@ def fig2_station(ts: TopFloodSeries, out_path: Path, station_id: str):
     ax.set_title(
         f"Figure 2 analog — Monthly seasonality (water year Oct-Sep), station {station_id}"
     )
-    ax.legend(loc="upper right", fontsize=8)
+    ax.legend(loc="upper right", fontsize=LEGEND_FONTSIZE)
     ax.grid(axis="y", alpha=0.25)
     fig.tight_layout()
     fig.savefig(out_path, dpi=150)
@@ -243,20 +244,28 @@ def fig2_station(ts: TopFloodSeries, out_path: Path, station_id: str):
 
 
 def fig3_station(ts: TopFloodSeries, out_path: Path, station_id: str):
+    # Bar-style comparison of monthly frequencies: AMS vs Top-10 vs Top-2
     f_all = month_freq_percent(ts.all_ams)
     f10 = month_freq_percent(ts.top10)
     f2 = month_freq_percent(ts.top2)
-    fig, ax = plt.subplots(figsize=(10, 4.6))
+
+    f_all_wy = np.array([f_all[m - 1] for m in WY_MONTH_ORDER], dtype=float)
+    f10_wy = np.array([f10[m - 1] for m in WY_MONTH_ORDER], dtype=float)
+    f2_wy = np.array([f2[m - 1] for m in WY_MONTH_ORDER], dtype=float)
+
+    fig, ax = plt.subplots(figsize=(10.6, 4.8))
     x = np.arange(12)
-    ax.plot(x, f_all, "-o", color="#444", label="All AMS")
-    ax.plot(x, f10, "-o", color="#1f77b4", label="Top-10")
-    ax.plot(x, f2, "-o", color="#2ca02c", label="Top-2")
+    w = 0.28
+    ax.bar(x - w, f_all_wy, width=w, color="#6b7280", edgecolor="#374151", linewidth=0.4, label="All AMS")
+    ax.bar(x, f10_wy, width=w, color="#1f77b4", edgecolor="#1f4d7a", linewidth=0.4, label="Top-10")
+    ax.bar(x + w, f2_wy, width=w, color="#2ca02c", edgecolor="#1c6e1c", linewidth=0.4, label="Top-2")
+
     ax.set_xticks(x)
-    ax.set_xticklabels(["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"])
+    ax.set_xticklabels(WY_MONTH_LABELS)
     ax.set_ylabel("Relative frequency (%)")
-    ax.set_title(f"Figure 3 analog — AMS vs top floods seasonality, station {station_id}")
-    ax.grid(alpha=0.25)
-    ax.legend()
+    ax.set_title(f"Figure 3 analog — AMS vs top floods seasonality (water year Oct-Sep), station {station_id}")
+    ax.grid(axis="y", alpha=0.25)
+    ax.legend(fontsize=LEGEND_FONTSIZE, ncol=3, loc="upper right")
     fig.tight_layout()
     fig.savefig(out_path, dpi=150)
     plt.close(fig)
@@ -290,7 +299,7 @@ def _plot_hypergeom_distribution(N: int, K: int, n: int, observed: int, title: s
     ax.set_ylabel("Probability")
     ax.set_title(title)
     ax.grid(axis="y", alpha=0.25)
-    ax.legend(loc="upper right")
+    ax.legend(loc="upper right", fontsize=LEGEND_FONTSIZE)
     fig.tight_layout()
     fig.savefig(out_path, dpi=150)
     plt.close(fig)
@@ -350,14 +359,14 @@ def fig6_station(ts: TopFloodSeries, out_path: Path, station_id: str):
     axs[0].set_title("Last 25 years")
     axs[0].set_xlabel("Top-2 count")
     axs[0].set_ylabel("Probability")
-    axs[0].legend()
+    axs[0].legend(fontsize=LEGEND_FONTSIZE)
     axs[0].grid(axis="y", alpha=0.25)
 
     axs[1].bar(xs, p10, color="#8db9df", edgecolor="#2f4f6f", linewidth=0.6)
     axs[1].axvline(obs10, color="#d62728", linewidth=2, label=f"Observed={obs10}")
     axs[1].set_title("Last 10 years")
     axs[1].set_xlabel("Top-2 count")
-    axs[1].legend()
+    axs[1].legend(fontsize=LEGEND_FONTSIZE)
     axs[1].grid(axis="y", alpha=0.25)
     fig.suptitle(f"Figure 6 analog — Top-2 occurrence expectations, station {station_id}")
     fig.tight_layout()
@@ -408,28 +417,52 @@ def fit_quasi_poisson(y: np.ndarray, x: np.ndarray) -> Dict[str, float]:
         "beta0": float(beta[0]),
         "beta1": float(beta[1]),
         "phi": phi,
+        "cov00": float(cov[0, 0]),
+        "cov01": float(cov[0, 1]),
+        "cov11": float(cov[1, 1]),
         "p_value": p,
         "trend_magnitude": trend_magnitude,
     }
 
 
-def _trend_plot(df_counts: pd.DataFrame, top_label: str, station_id: str, out_path: Path, connect_observed: bool = True):
+def _trend_plot(
+    df_counts: pd.DataFrame,
+    top_label: str,
+    station_id: str,
+    out_path: Path,
+    connect_observed: bool = True,
+    show_ci: bool = False,
+):
     d = df_counts.copy()
     y = d["count"].to_numpy(dtype=float)
     x = d["year"].to_numpy(dtype=float)
     fit = fit_quasi_poisson(y, x)
-    mu = np.exp(fit["beta0"] + fit["beta1"] * x)
+    eta = fit["beta0"] + fit["beta1"] * x
+    mu = np.exp(eta)
     fig, ax = plt.subplots(figsize=(9.2, 4.4))
     if connect_observed:
         ax.plot(d["year"], d["count"], "o-", color="#4c78a8", label="Observed")
     else:
         ax.scatter(d["year"], d["count"], color="#4c78a8", s=30, label="Observed")
+
+    if show_ci:
+        # 95% CI on linear predictor: eta ± 1.96 * sqrt(var(eta))
+        cov00 = fit["cov00"]
+        cov01 = fit["cov01"]
+        cov11 = fit["cov11"]
+        var_eta = cov00 + 2.0 * cov01 * x + cov11 * (x ** 2)
+        se_eta = np.sqrt(np.maximum(var_eta, 0.0))
+        z = 1.96
+        mu_lo = np.exp(eta - z * se_eta)
+        mu_hi = np.exp(eta + z * se_eta)
+        ax.fill_between(d["year"], mu_lo, mu_hi, color="#e45756", alpha=0.15, label="95% CI")
+
     ax.plot(d["year"], mu, "-", color="#e45756", linewidth=2, label="Quasi-Poisson fit")
     ax.set_title(f"{top_label} trend analog — station {station_id} (p={fit['p_value']:.3f})")
     ax.set_xlabel("Year")
     ax.set_ylabel("Flood events/year")
     ax.grid(alpha=0.25)
-    ax.legend()
+    ax.legend(fontsize=LEGEND_FONTSIZE)
     fig.tight_layout()
     fig.savefig(out_path, dpi=150)
     plt.close(fig)
@@ -437,7 +470,15 @@ def _trend_plot(df_counts: pd.DataFrame, top_label: str, station_id: str, out_pa
 
 def fig7_station(ts: TopFloodSeries, out_path: Path, station_id: str):
     d2 = build_annual_count_series(ts, top=2)
-    _trend_plot(d2, "Figure 7 analog (Top-2 annual counts)", station_id, out_path, connect_observed=True)
+    # Dots only (no connecting line) for observed values
+    _trend_plot(
+        d2,
+        "Figure 7 analog (Top-2 annual counts)",
+        station_id,
+        out_path,
+        connect_observed=False,
+        show_ci=True,
+    )
 
 
 def fig8_station(ts: TopFloodSeries, out_path: Path, station_id: str):

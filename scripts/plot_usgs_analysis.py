@@ -402,7 +402,7 @@ def plot_pot_seasonal(events_df, out_path, staid8, threshold, cfg: PotConfig):
     ax.grid(True, axis="y", alpha=0.25)
     ax.set_xlim(X_MIN.year - 0.8, X_MAX.year + 0.8)
     ax.set_xticks(list(range(X_MIN.year, X_MAX.year + 1, 2)))
-    ax.legend(ncol=4, fontsize=9, frameon=False, loc="upper left")
+    ax.legend(ncol=4, fontsize=10, frameon=False, loc="upper left")
     fig.subplots_adjust(left=0.08, right=0.98, top=0.86, bottom=0.14)
     os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
     plt.savefig(out_path, dpi=150, bbox_inches="tight", pad_inches=0.02)
@@ -642,7 +642,7 @@ def plot_teleconn_counts_seasonal(seasonal_counts_df, clim_seasonal_df, out_path
         if rr is not None:
             ax.text(0.02, 0.95, f"r={rr:.2f}", transform=ax.transAxes, ha="left", va="top", fontsize=9, color="#8b949e")
         if i == 0:
-            ax.legend(loc="best", fontsize=7, frameon=False)
+            ax.legend(loc="best", fontsize=10, frameon=False)
 
     for j in range(n, nrows * ncols):
         r = j // ncols

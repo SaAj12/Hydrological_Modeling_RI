@@ -28,3 +28,6 @@ venv/
 # IDE
 .idea/
 .vscode/
+
+# Local analysis outputs (do not publish)
+analysis_outputs/stations_largest_event/station_*_largest_event/

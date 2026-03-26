@@ -68,12 +68,28 @@
     wireFigure("usgs-pot-seasonal-figure", "usgs-pot-seasonal-no-data", base + "images/usgs_analysis/pot_counts_seasonal_" + id8 + ".png");
     wireFigure("usgs-seasonality-figure", "usgs-seasonality-no-data", base + "images/usgs_analysis/seasonality_monthly_" + id8 + ".png");
     wireFigure("usgs-extremes-figure", "usgs-extremes-no-data", base + "images/usgs_analysis/extremes_topN_" + id8 + ".png");
+    wireFigure("usgs-ams-rank-figure", "usgs-ams-rank-no-data", base + "images/usgs_analysis/ams_rank_2010_2025_" + id8 + ".png");
+    wireFigure("usgs-largest-event-figure", "usgs-largest-event-no-data", base + "images/usgs_analysis/largest_event_hydrograph_2010_2025_" + id8 + ".png");
+    wireFigure("usgs-stationwise-fig1-figure", "usgs-stationwise-fig1-no-data", base + "images/usgs_analysis/fig1_station_" + id8 + ".png");
+    wireFigure("usgs-stationwise-fig2-figure", "usgs-stationwise-fig2-no-data", base + "images/usgs_analysis/fig2_station_" + id8 + ".png");
+    wireFigure("usgs-stationwise-fig3-figure", "usgs-stationwise-fig3-no-data", base + "images/usgs_analysis/fig3_station_" + id8 + ".png");
+    wireFigure("usgs-stationwise-fig5-figure", "usgs-stationwise-fig5-no-data", base + "images/usgs_analysis/fig5_station_" + id8 + ".png");
+    wireFigure("usgs-stationwise-fig7-figure", "usgs-stationwise-fig7-no-data", base + "images/usgs_analysis/fig7_station_" + id8 + ".png");
+    wireFigure("usgs-stationwise-fig8-figure", "usgs-stationwise-fig8-no-data", base + "images/usgs_analysis/fig8_station_" + id8 + ".png");
 
     const setTitle = function (elId, text) { const el = get(elId); if (el) el.textContent = text; };
     setTitle("usgs-fdc-title", "Flow duration curve (FDC) — Station " + id8);
     setTitle("usgs-pot-seasonal-title", "POT counts (seasonal) — Station " + id8);
     setTitle("usgs-seasonality-title", "Flood seasonality (monthly) — Station " + id8);
     setTitle("usgs-extremes-title", "Large floods (top-N) — Station " + id8);
+    setTitle("usgs-ams-rank-title", "AMS ranking (2010–2025) — Station " + id8);
+    setTitle("usgs-largest-event-title", "Largest flood event hydrograph (2010–2025) — Station " + id8);
+    setTitle("usgs-stationwise-fig1-title", "Stationwise Figure 1 — AMS ranking (2010–2025) — Station " + id8);
+    setTitle("usgs-stationwise-fig2-title", "Stationwise Figure 2 — Monthly seasonality — Station " + id8);
+    setTitle("usgs-stationwise-fig3-title", "Stationwise Figure 3 — AMS vs top floods seasonality — Station " + id8);
+    setTitle("usgs-stationwise-fig5-title", "Stationwise Figure 5 — Expected top-10 occurrence (2010–2025) — Station " + id8);
+    setTitle("usgs-stationwise-fig7-title", "Stationwise Figure 7 — Top-2 annual counts trend — Station " + id8);
+    setTitle("usgs-stationwise-fig8-title", "Stationwise Figure 8 — Top-10 annual counts trend — Station " + id8);
   }
 
   async function init() {
