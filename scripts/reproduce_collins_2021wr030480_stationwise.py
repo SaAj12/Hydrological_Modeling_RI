@@ -2,7 +2,7 @@
 Create station-wise products analogous to Collins et al. (2022), Figures 2-8 and Tables 1-3.
 
 Outputs are written to:
-  analysis_outputs/collins_2021wr030480_stationwise/
+  analysis_outputs/
 
 Per station:
   - figs/fig1_station_<STAID8>.png
@@ -39,7 +39,7 @@ from chart_axis_constants import X_MIN, X_MAX
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_DISCHARGE_JSON = PROJECT_ROOT / "frontend" / "data" / "discharge_data.json"
 DEFAULT_CLIMATE_CSV = PROJECT_ROOT / "frontend" / "data" / "climate_indices_monthly.csv"
-DEFAULT_OUT_ROOT = PROJECT_ROOT / "analysis_outputs" / "collins_2021wr030480_stationwise"
+DEFAULT_OUT_ROOT = PROJECT_ROOT / "analysis_outputs"
 
 CLIMATE_COLS = ["amo", "nao", "pdo", "pna", "enso_soi", "mei", "ao"]
 SEASONS = ["DJF", "MAM", "JJA", "SON"]
